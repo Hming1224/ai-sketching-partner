@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
+/* postcss-ignore */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -118,14 +118,6 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  button {
     @apply appearance-none bg-inherit border-none;
   }
 }
