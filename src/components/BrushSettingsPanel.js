@@ -19,7 +19,7 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
   );
 
   return (
-    <div className="border px-4 py-2 rounded bg-gray-50">
+    <div className="border px-4 py-2 rounded bg-gray-100">
       <Accordion type="single" collapsible defaultValue="brush-settings">
         <AccordionItem value="brush-settings">
           <AccordionTrigger className="text-lg space-x-2 font-bold mb-2">

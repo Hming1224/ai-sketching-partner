@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import CanvasArea from "@/components/CanvasArea";
 import BrushSettingsPanel from "@/components/BrushSettingsPanel";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
@@ -144,6 +145,7 @@ export default function Home() {
   };
 
   // 統一的 AI 回饋函數、處理 JSON 結構回應
+  // 統一的 AI 回饋函數、處理 JSON 結構回應
   const handleSendToAI = async () => {
     if (!isLoggedIn) {
       console.error("受試者未登入");
@@ -172,34 +174,38 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await res.json();
+      // 檢查 API 錯誤
       if (!res.ok) {
-        console.error("AI 回饋 API 錯誤：", data?.error);
-        setIsLoadingAI(false);
+        const errorData = await res.json();
+        console.error("AI 回饋 API 錯誤：", errorData?.error);
         alert("AI 回饋失敗，請重試");
+        setIsLoadingAI(false);
         return;
       }
 
+      const data = await res.json();
+
+      // 🚨 修正：直接使用後端回傳的 feedback 物件，無需再做複雜的判斷
       const feedback = data.feedback;
       console.log("收到 AI 回饋:", feedback);
 
-      // 使用 upload service（傳入模式）
+      // 使用 upload service，傳入後端回傳的 feedback 物件
       const result = await uploadSketchAndFeedback(
         blob,
         participantId.trim(),
         prompt,
-        feedback,
+        feedback, // 這裡傳入完整的 feedback 物件
         selectedMode
       );
 
       // 加到前端歷史記錄
       const newFeedbackRecord = {
-        id: result.recordData.timestamp,
+        id: result.docId,
         timestamp: new Date(),
         taskDescription: prompt,
-        feedback: feedback,
+        feedback: feedback, // 這裡也使用完整的 feedback 物件
         feedbackMode: selectedMode,
-        imageUrl: result.imageUrl,
+        imageUrl: result.userSketchUrl,
         docId: result.docId,
       };
 
@@ -227,12 +233,12 @@ export default function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 受試者 ID
               </label>
-              <input
+              <Input
                 type="text"
                 value={participantId}
                 onChange={(e) => setParticipantId(e.target.value)}
                 placeholder="例如：P01、P02..."
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 autoFocus
               />
             </div>
@@ -292,7 +298,7 @@ export default function Home() {
             <Button
               onClick={handleParticipantLogin}
               disabled={!participantId.trim() || !selectedMode}
-              className="w-full text-lg bg-blue-500 text-white py-6 rounded-md font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="w-full text-lg bg-black text-white py-6 rounded-md font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               開始實驗
             </Button>
@@ -325,7 +331,7 @@ export default function Home() {
           </div>
 
           {/* 任務說明 */}
-          <div className="border p-4 rounded bg-gray-50">
+          <div className="border p-4 rounded bg-gray-100">
             <h2 className="text-lg font-bold mb-2">📜 設計任務</h2>
             <p className="text-sm">{prompt}</p>
           </div>
@@ -374,7 +380,7 @@ export default function Home() {
         </div>
 
         {/* 右側：AI 回饋區塊 */}
-        <div className="border p-4 rounded bg-gray-100">
+        <div className="border p-4 rounded bg-gray-100 h-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
 
@@ -392,7 +398,7 @@ export default function Home() {
                 const feedbackConfig = FEEDBACK_MODES[record.feedbackMode];
                 return (
                   <div
-                    key={record.id}
+                    key={record.docId}
                     className={`p-4 bg-white rounded-md shadow-sm border-l-4 ${feedbackConfig?.borderClass}`}
                   >
                     {/* 回饋標題和時間 */}

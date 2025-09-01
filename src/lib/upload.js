@@ -1,95 +1,106 @@
-// src/lib/upload.js
-import { storage, db } from "./firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+// upload.js 檔案
 
-/**
- * 上傳草圖圖片到 Firebase Storage 並儲存記錄到 Firestore
- * @param {Blob} imageBlob - 圖片 blob 資料
- * @param {string} participantId - 受試者 ID
- * @param {string} taskDescription - 任務描述
- * @param {string} aiFeedback - AI 回饋內容
- * @returns {Promise<{imageUrl: string, docId: string}>}
- */
-export const uploadSketchAndFeedback = async (
-  imageBlob,
+import { db } from "./firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+// 這是一個示範用的 uploadImage 函式
+export async function uploadImage(blob) {
+  try {
+    const storage = getStorage();
+    const storageRef = ref(storage, `sketches/${Date.now()}.png`);
+
+    // 使用 uploadBytes 函式上傳 blob
+    const snapshot = await uploadBytes(storageRef, blob);
+    console.log("圖片已成功上傳。");
+
+    // 取得圖片的公開 URL
+    const imageUrl = await getDownloadURL(snapshot.ref);
+    console.log("圖片 URL:", imageUrl);
+
+    return imageUrl;
+  } catch (error) {
+    console.error("圖片上傳到 Firebase Storage 失敗:", error);
+    return null;
+  }
+}
+
+// createParticipantInfo 函式
+export async function createParticipantInfo(participantId, selectedMode) {
+  try {
+    const docRef = await addDoc(collection(db, "participants"), {
+      participantId: participantId,
+      selectedMode: selectedMode,
+      timestamp: serverTimestamp(),
+    });
+    console.log("受試者資訊已成功寫入 Firestore, ID:", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("寫入受試者資訊到 Firestore 失敗:", error);
+    throw new Error(`建立受試者資訊失敗: ${error.message}`);
+  }
+}
+
+// uploadSketchAndFeedback 函式
+export async function uploadSketchAndFeedback(
+  blob,
   participantId,
   taskDescription,
-  aiFeedback
-) => {
+  feedback,
+  feedbackMode
+) {
   try {
-    const timestamp = Date.now();
+    if (!feedback || !feedback.suggestions) {
+      throw new Error("無效的 AI 回饋資料。");
+    }
 
-    // 上傳圖片到 Storage
-    // 路徑格式：sketches/[participantId]/[timestamp].png
-    const imageRef = ref(storage, `sketches/${participantId}/${timestamp}.png`);
+    const userSketchUrl = await uploadImage(blob);
+    if (!userSketchUrl) {
+      throw new Error("無法上傳使用者草圖圖片。");
+    }
 
-    console.log("上傳圖片到 Storage...");
-    await uploadBytes(imageRef, imageBlob);
-    const imageUrl = await getDownloadURL(imageRef);
-    console.log("圖片上傳成功");
+    let aiSuggestionsUrl = "";
+    let aiAnalysis = "";
 
-    // 儲存記錄到 Firestore（使用 subcollection 結構）
-    console.log("存儲記錄到 Firestore...");
+    if (feedback.type === "image") {
+      const base64Image = feedback.suggestions;
 
-    // 路徑：participants/[participantId]/sketches/[docId]
-    const participantDocRef = doc(db, "participants", participantId);
-    const sketchesCollectionRef = collection(participantDocRef, "sketches");
+      // 🚨 修正：更穩健的 Base64 轉換方式
+      // 移除前綴，只保留純粹的 Base64 數據
+      const cleanedBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");
+
+      // 檢查清理後的字串是否為有效 Base64
+      if (!cleanedBase64 || cleanedBase64.length === 0) {
+        throw new Error("無效的 Base64 字串");
+      }
+
+      const buffer = Buffer.from(cleanedBase64, "base64");
+      const aiImageBlob = new Blob([buffer], { type: "image/png" });
+
+      aiSuggestionsUrl = await uploadImage(aiImageBlob);
+      if (!aiSuggestionsUrl) {
+        throw new Error("無法上傳 AI 回饋圖片。");
+      }
+    } else if (feedback.type === "text") {
+      aiAnalysis = feedback.suggestions;
+    }
 
     const recordData = {
+      participantId: participantId,
       taskDescription: taskDescription,
-      aiFeedback: aiFeedback,
-      imageUrl: imageUrl,
-      createdAt: serverTimestamp(),
-      timestamp: timestamp,
+      userSketchUrl: userSketchUrl,
+      aiFeedbackSuggestionsUrl: aiSuggestionsUrl,
+      aiFeedbackAnalysis: aiAnalysis,
+      feedbackMode: feedbackMode,
+      timestamp: serverTimestamp(),
     };
 
-    const docRef = await addDoc(sketchesCollectionRef, recordData);
-    console.log("Firestore 記錄成功，文件 ID:", docRef.id);
+    const docRef = await addDoc(collection(db, "feedbackRecords"), recordData);
+    console.log("記錄已成功寫入 Firestore, ID:", docRef.id);
 
-    return {
-      imageUrl: imageUrl,
-      docId: docRef.id,
-      recordData: recordData,
-    };
+    return { recordData, userSketchUrl, docId: docRef.id };
   } catch (error) {
     console.error("上傳失敗：", error);
-    throw error;
+    throw new Error(`上傳失敗: ${error.message}`);
   }
-};
-export const createParticipantInfo = async (participantId, feedbackMode) => {
-  try {
-    // 路徑：experiments/[feedbackMode]/participants/[participantId]
-    const participantRef = doc(
-      db,
-      "experiments",
-      feedbackMode,
-      "participants",
-      participantId
-    );
-
-    await setDoc(
-      participantRef,
-      {
-        participantId: participantId,
-        feedbackMode: feedbackMode,
-        createdAt: serverTimestamp(),
-        lastActiveAt: serverTimestamp(),
-        totalResponses: 0,
-      },
-      { merge: true }
-    );
-
-    console.log(
-      `參與者資訊已建立: experiments/${feedbackMode}/participants/${participantId}`
-    );
-  } catch (error) {
-    console.error("建立參與者資訊失敗:", error);
-  }
-};
+}
