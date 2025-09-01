@@ -1,11 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true, // 開啟 App Router
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        port: "",
+        pathname: "/v0/b/**",
+      },
+      {
+        protocol: "https",
+        hostname: "oaidalleapiprodscus.blob.core.windows.net", // 這是 DALL-E 3 圖片的網域
+      },
+    ],
   },
-  // 明確指定 src 為根目錄
-  //（可選，Next 14 起已內建支援 src/，但 Vercel 有時偵測不到）
-  // 不需要特別寫 basePath unless 你 deploy 在子路徑
 };
 
 export default nextConfig;

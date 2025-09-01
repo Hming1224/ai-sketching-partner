@@ -19,14 +19,16 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
   );
 
   return (
-    <div className="border p-4 rounded bg-gray-50">
-      <Accordion type="single" collapsible defaultValue="">
+    <div className="border px-4 py-2 rounded bg-gray-50">
+      <Accordion type="single" collapsible defaultValue="brush-settings">
         <AccordionItem value="brush-settings">
-          <AccordionTrigger>✏️ 筆刷設定</AccordionTrigger>
-          <AccordionContent className="space-y-4 mt-4">
+          <AccordionTrigger className="text-lg space-x-2 font-bold mb-2">
+            ✏️ 筆刷設定
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2">
             {/* 筆刷大小 */}
-            <div>
-              <Label>大小（size）</Label>
+            <div className="pt-2">
+              <Label className="mb-2 block">大小（size）</Label>
               <Slider
                 min={1}
                 max={32}
@@ -38,7 +40,7 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
 
             {/* 壓力感知 */}
             <div>
-              <Label>壓力感知（thinning）</Label>
+              <Label className="mb-2 block">壓力感知（thinning）</Label>
               <Slider
                 min={-1}
                 max={1}
@@ -50,7 +52,7 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
 
             {/* 滑順度 */}
             <div>
-              <Label>滑順度（streamline）</Label>
+              <Label className="mb-2 block">滑順度（streamline）</Label>
               <Slider
                 min={0}
                 max={1}
@@ -62,7 +64,7 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
 
             {/* 平滑度 */}
             <div>
-              <Label>平滑度（smoothing）</Label>
+              <Label className="mb-2 block">平滑度（smoothing）</Label>
               <Slider
                 min={0}
                 max={1}
@@ -74,7 +76,7 @@ export default function BrushSettingsPanel({ options = {}, onChange }) {
 
             {/* 筆刷顏色 */}
             <div>
-              <Label>筆刷顏色（color）</Label>
+              <Label className="mb-2 block">筆刷顏色（color）</Label>
               <input
                 type="color"
                 value={options.color ?? "#000000"}
