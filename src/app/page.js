@@ -1,6 +1,7 @@
+// page.js code
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import CanvasArea from "@/components/CanvasArea";
 import BrushSettingsPanel from "@/components/BrushSettingsPanel";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
+import { X } from "lucide-react";
 
 // 配合你的 BrushSettingsPanel 的預設值
 const DEFAULT_BRUSH_OPTIONS = {
@@ -59,157 +61,186 @@ const FEEDBACK_MODES = {
 };
 
 export default function Home() {
-  // 簡化的 state（移除複雜的使用者管理）
   const [participantId, setParticipantId] = useState("");
-  const [selectedMode, setSelectedMode] = useState(""); //選擇哪個AI回饋模式
+  const [selectedMode, setSelectedMode] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [brushOptions, setBrushOptions] = useState(DEFAULT_BRUSH_OPTIONS);
-  const [isLoadingAI, setIsLoadingAI] = useState(false); // AI載入回饋狀態
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+
+  const [uploadedImageFile, setUploadedImageFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
-
   const canvasRef = useRef();
   const [prompt, setPrompt] = useState(
     "請您繪製一張能夠在長照中心使用的椅子，您可以從不同設計面向去思考這張椅子的功能、結構、材質等，任何發想形式或呈現手法不侷限，您可以嘗試想像在這樣環境中會有什麼樣使用者，他們會如何使用這樣椅子，請您盡可能繪製越多草圖越好。"
   );
 
-  const handleUndo = () => {
-    canvasRef.current?.undo();
+  const [targetUser, setTargetUser] = useState("");
+  const [userNeed, setUserNeed] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  // ✨ 新增 state 來追蹤畫布是否為空
+  const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
+
+  const handleUserInputChange = (setter, value) => {
+    setter(value);
+    setIsEditing(true);
   };
 
-  const handleRedo = () => {
-    canvasRef.current?.redo();
-  };
+  useEffect(() => {
+    if (selectedMode !== "sketch-image") {
+      setIsSaved(false);
+      setIsEditing(false);
+      setTargetUser("");
+      setUserNeed("");
+    }
+  }, [selectedMode]);
 
+  const handleUndo = () => canvasRef.current?.undo();
+  const handleRedo = () => canvasRef.current?.redo();
   const handleClear = () => {
     const confirmed = confirm("確定要清除畫布嗎？此操作無法復原。");
     if (!confirmed) return;
-
     canvasRef.current?.clearCanvas();
+    setIsCanvasEmpty(true); // ✨ 清除畫布後，直接更新狀態
   };
-
-  const handleDownload = () => {
-    canvasRef.current?.downloadCanvas();
-  };
-
-  // 受試者登入函數
+  const handleDownload = () => canvasRef.current?.downloadCanvas();
   const handleParticipantLogin = async () => {
     if (!participantId.trim()) {
       alert("請輸入受試者 ID");
       return;
     }
-
     if (!selectedMode) {
       alert("請選擇 AI 回饋模式");
       return;
     }
-
     try {
-      console.log("受試者登入:", participantId.trim(), "模式:", selectedMode);
-
-      // 建立參與者資訊（包含模式）
       await createParticipantInfo(participantId.trim(), selectedMode);
-
       setIsLoggedIn(true);
       setBrushOptions({ ...DEFAULT_BRUSH_OPTIONS });
       setFeedbackHistory([]);
-
       if (canvasRef.current?.clearCanvas) {
         canvasRef.current.clearCanvas();
       }
-
-      console.log("實驗環境已準備完成");
     } catch (error) {
-      console.error("登入設定失敗:", error);
       alert("系統設定失敗，請重試");
     }
   };
-
-  // 重新開始實驗（新受試者）
   const handleStartNewExperiment = () => {
     const confirmed = confirm("確定要開始新的實驗嗎？目前的進度將會清除。");
     if (!confirmed) return;
-
     setParticipantId("");
-    setSelectedMode(""); // 重置模式選擇
+    setSelectedMode("");
     setIsLoggedIn(false);
     setFeedbackHistory([]);
     setBrushOptions({ ...DEFAULT_BRUSH_OPTIONS });
-
-    if (canvasRef.current?.clearCanvas) {
-      canvasRef.current.clearCanvas();
-    }
-
-    console.log("已重置為新實驗");
+    handleClearUploadedImage();
+    setIsSaved(false);
+    setIsEditing(false);
+    setTargetUser("");
+    setUserNeed("");
+    // ✨ 重設畫布狀態
+    setIsCanvasEmpty(true);
   };
 
-  // 統一的 AI 回饋函數、處理 JSON 結構回應
+  const handleUploadButtonClick = () => fileInputRef.current?.click();
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setUploadedImageFile(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
+      canvasRef.current?.clearCanvas();
+      setIsCanvasEmpty(false); // ✨ 上傳圖片後，畫布不再是空的
+    }
+  };
+  const handleClearUploadedImage = () => {
+    setUploadedImageFile(null);
+    setImagePreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    // ✨ 清除圖片後，檢查畫布是否為空
+    setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
+  };
+
+  const handleSaveInputs = () => {
+    if (!targetUser && !userNeed) {
+      alert("請至少輸入一項內容後再儲存。");
+      return;
+    }
+    setIsSaved(true);
+    setIsEditing(false);
+  };
+
+  const handleEditInputs = () => {
+    setIsEditing(true);
+  };
+  // ✨ 處理畫布狀態變化的回調函式
+  const handleCanvasChange = () => {
+    if (canvasRef.current) {
+      setIsCanvasEmpty(canvasRef.current.isEmpty());
+    }
+  };
+
   const handleSendToAI = async () => {
     if (!isLoggedIn) {
       console.error("受試者未登入");
       return;
     }
-
-    console.log(`handleSendToAI 開始執行，模式: ${selectedMode}`);
-
+    if (!isSaved) {
+      alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
+      return;
+    }
+    // ✨ 直接在發送前檢查畫布
+    const isCanvasEmpty = canvasRef.current?.isEmpty();
+    if (isCanvasEmpty) {
+      alert("請先在畫布上繪圖。");
+      return;
+    }
+    console.log(`handleSendToAI (Canvas) 開始執行，模式: ${selectedMode}`);
     const blob = await canvasRef.current?.getCanvasImageBlob();
     if (!blob) {
+      alert("請先在畫布上繪圖。");
       console.error("無法取得畫布影像");
       return;
     }
-
     setIsLoadingAI(true);
-
     const formData = new FormData();
     formData.append("taskDescription", prompt);
     formData.append("image", blob, "sketch.png");
-    formData.append("feedbackType", selectedMode); // 傳入選擇的模式
-
+    formData.append("feedbackType", selectedMode);
+    formData.append("targetUser", targetUser);
+    formData.append("userNeed", userNeed);
     try {
-      console.log("發送 AI API 請求...");
       const res = await fetch("/api/feedback", {
         method: "POST",
         body: formData,
       });
-
-      // 檢查 API 錯誤
       if (!res.ok) {
-        const errorData = await res.json();
-        console.error("AI 回饋 API 錯誤：", errorData?.error);
-        alert("AI 回饋失敗，請重試");
-        setIsLoadingAI(false);
-        return;
+        throw new Error(await res.text());
       }
-
       const data = await res.json();
-
-      // 🚨 修正：直接使用後端回傳的 feedback 物件，無需再做複雜的判斷
       const feedback = data.feedback;
-      console.log("收到 AI 回饋:", feedback);
-
-      // 使用 upload service，傳入後端回傳的 feedback 物件
       const result = await uploadSketchAndFeedback(
         blob,
         participantId.trim(),
         prompt,
-        feedback, // 這裡傳入完整的 feedback 物件
+        feedback,
         selectedMode
       );
-
-      // 加到前端歷史記錄
       const newFeedbackRecord = {
         id: result.docId,
         timestamp: new Date(),
         taskDescription: prompt,
-        feedback: feedback, // 這裡也使用完整的 feedback 物件
+        feedback: feedback,
         feedbackMode: selectedMode,
         imageUrl: result.userSketchUrl,
         docId: result.docId,
       };
-
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
-      console.log("完整流程完成");
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -217,6 +248,68 @@ export default function Home() {
       setIsLoadingAI(false);
     }
   };
+
+  const handleSendUploadedImageToAI = async () => {
+    if (!isLoggedIn) {
+      console.error("受試者未登入");
+      return;
+    }
+    if (!uploadedImageFile) {
+      alert("沒有已上傳的圖片。");
+      return;
+    }
+    if (!isSaved) {
+      alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
+      return;
+    }
+
+    console.log(`handleSendUploadedImageToAI 開始執行，模式: ${selectedMode}`);
+    setIsLoadingAI(true);
+    const formData = new FormData();
+    formData.append("taskDescription", prompt);
+    formData.append("image", uploadedImageFile, uploadedImageFile.name);
+    formData.append("feedbackType", selectedMode);
+    formData.append("targetUser", targetUser);
+    formData.append("userNeed", userNeed);
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      const data = await res.json();
+      const feedback = data.feedback;
+      const result = await uploadSketchAndFeedback(
+        uploadedImageFile,
+        participantId.trim(),
+        prompt,
+        feedback,
+        selectedMode
+      );
+      const newFeedbackRecord = {
+        id: result.docId,
+        timestamp: new Date(),
+        taskDescription: prompt,
+        feedback: feedback,
+        feedbackMode: selectedMode,
+        imageUrl: result.userSketchUrl,
+        docId: result.docId,
+      };
+      setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
+      handleClearUploadedImage();
+    } catch (error) {
+      console.error("處理失敗：", error);
+      alert("處理失敗，請重試");
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
+
+  // 最終的按鈕禁用邏輯
+  const isSendButtonDisabled =
+    isLoadingAI || !isSaved || (!uploadedImageFile && isCanvasEmpty); // ✨ 直接使用 isCanvasEmpty state
 
   return (
     <div className="relative">
@@ -226,8 +319,6 @@ export default function Home() {
             <h2 className="text-xl font-bold mb-4 text-center text-gray-800">
               歡迎參與草圖設計實驗
             </h2>
-
-            {/* 受試者 ID 輸入 */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 受試者 ID
@@ -241,8 +332,6 @@ export default function Home() {
                 autoFocus
               />
             </div>
-
-            {/* AI 回饋模式選擇 */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 選擇 AI 回饋模式
@@ -251,12 +340,11 @@ export default function Home() {
                 {Object.entries(FEEDBACK_MODES).map(([mode, config]) => (
                   <label
                     key={mode}
-                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all 
-                               ${
-                                 selectedMode === mode
-                                   ? `${config.borderClass} ${config.bgClass}`
-                                   : "border-gray-200 hover:border-gray-300"
-                               }`}
+                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${
+                      selectedMode === mode
+                        ? `${config.borderClass} ${config.bgClass}`
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
                   >
                     <input
                       type="radio"
@@ -293,7 +381,6 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
             <Button
               onClick={handleParticipantLogin}
               disabled={!participantId.trim() || !selectedMode}
@@ -305,11 +392,8 @@ export default function Home() {
         </div>
       ) : null}
 
-      {/* 主要內容區域 */}
       <div className="grid grid-cols-2 gap-4 p-6">
-        {/* 左側：任務區、筆刷設定、畫布、控制按鈕 */}
         <div className="space-y-4">
-          {/* 受試者資訊顯示 */}
           <div
             className={`p-3 ${currentModeConfig?.bgClass} rounded flex justify-between items-center`}
           >
@@ -328,14 +412,72 @@ export default function Home() {
               新受試者
             </button>
           </div>
-
-          {/* 任務說明 */}
           <div className="border p-4 rounded bg-gray-100">
             <h2 className="text-lg font-bold mb-2">📜 設計任務</h2>
             <p className="text-sm">{prompt}</p>
           </div>
 
-          {/* 筆刷設定區 */}
+          {
+            <div className="space-y-4 p-4 rounded bg-gray-100 border">
+              <h3 className="text-lg font-bold">🎯 定義設計情境</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  我的設計對象是：
+                </label>
+                <Input
+                  type="text"
+                  value={targetUser}
+                  onChange={(e) =>
+                    handleUserInputChange(setTargetUser, e.target.value)
+                  }
+                  placeholder="例如：久坐的老年人"
+                  className="w-full"
+                  disabled={isSaved && !isEditing}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  我認為他們有什麼樣需求：
+                </label>
+                <Input
+                  type="text"
+                  value={userNeed}
+                  onChange={(e) =>
+                    handleUserInputChange(setUserNeed, e.target.value)
+                  }
+                  placeholder="例如：需要舒適且透氣的椅面"
+                  className="w-full"
+                  disabled={isSaved && !isEditing}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={handleSaveInputs}
+                  disabled={!isEditing || (!targetUser && !userNeed)}
+                  className="bg-gray-800 text-white hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  儲存
+                </Button>
+                <Button
+                  onClick={handleEditInputs}
+                  disabled={!isSaved || isEditing}
+                  className="bg-gray-500 text-white hover:bg-gray-400 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  修改
+                </Button>
+                {isSaved ? (
+                  <span className="text-green-600 text-sm font-medium">
+                    已儲存，可以開始繪圖。
+                  </span>
+                ) : (
+                  <span className="text-gray-500 text-sm">
+                    輸入後請儲存，否則無法獲得回饋。
+                  </span>
+                )}
+              </div>
+            </div>
+          }
+
           <BrushSettingsPanel
             options={brushOptions}
             onChange={(key, value) =>
@@ -343,32 +485,72 @@ export default function Home() {
             }
           />
 
-          {/* 畫布 */}
-          <CanvasArea ref={canvasRef} brushOptions={brushOptions} />
+          <div className="relative">
+            <CanvasArea
+              ref={canvasRef}
+              brushOptions={brushOptions}
+              onChange={handleCanvasChange} // ✨ 將回調函式傳遞給 CanvasArea
+            />
+            {imagePreviewUrl && (
+              <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-400 rounded-lg">
+                <Image
+                  src={imagePreviewUrl}
+                  alt="圖片預覽"
+                  width={400}
+                  height={400}
+                  className="max-w-full max-h-full object-contain"
+                />
+                <button
+                  onClick={handleClearUploadedImage}
+                  className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-red-100 transition-colors"
+                  title="清除上傳的圖片"
+                >
+                  <X className="w-5 h-5 text-red-500" />
+                </button>
+                <p className="mt-2 text-sm text-gray-600">
+                  已上傳圖片，將以此圖獲得 AI 回饋。
+                </p>
+              </div>
+            )}
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/png, image/jpeg, image/jpg"
+          />
 
-          {/* 控制按鈕 */}
           <div className="space-y-4">
-            {/* 畫布控制按鈕 */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button onClick={handleUndo}>返回</Button>
               <Button onClick={handleRedo}>重做</Button>
               <Button onClick={handleClear}>清除畫布</Button>
               <Button onClick={handleDownload}>下載繪圖</Button>
-              {/* AI 回饋按鈕（根據選擇的模式顯示對應按鈕） */}
+
+              <Button onClick={handleUploadButtonClick} variant="outline">
+                上傳圖片 (臨時)
+              </Button>
+
               <Button
-                onClick={handleSendToAI}
-                disabled={isLoadingAI}
-                className={` p-3 rounded-md font-medium border transition-colors ${
-                  isLoadingAI
+                onClick={
+                  uploadedImageFile
+                    ? handleSendUploadedImageToAI
+                    : handleSendToAI
+                }
+                disabled={isSendButtonDisabled}
+                className={`p-3 rounded-md font-medium border transition-colors ${
+                  isSendButtonDisabled
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : currentModeConfig
                     ? `${currentModeConfig.bgClass} ${
                         currentModeConfig.borderClass
                       } ${
                         currentModeConfig.textColorClass
-                      } hover:bg-${currentModeConfig.bgClass
-                        .replace("bg-", "")
-                        .replace("-50", "-100")}`
+                      } hover:bg-${currentModeConfig.bgClass.replace(
+                        "-50",
+                        "-100"
+                      )}`
                     : "bg-gray-50 text-gray-700"
                 }`}
               >
@@ -378,19 +560,16 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 右側：AI 回饋區塊 */}
         <div className="border p-4 rounded bg-gray-100 h-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
-
             {feedbackHistory.length > 0 && (
               <span className="text-xs text-gray-500">
                 回應次數：{feedbackHistory.length}
               </span>
             )}
           </div>
-
-          <div className="overflow-y-auto space-y-4 h-screen">
+          <div className="overflow-y-auto space-y-4 h-screen pb-20">
             {isLoadingAI && <AILoadingIndicator config={currentModeConfig} />}
             {feedbackHistory.length > 0 ? (
               feedbackHistory.map((record, recordIdx) => {
@@ -400,7 +579,6 @@ export default function Home() {
                     key={record.docId}
                     className={`p-4 bg-white rounded-md shadow-sm border-l-4 ${feedbackConfig?.borderClass}`}
                   >
-                    {/* 回饋標題和時間 */}
                     <div className="flex justify-between items-start mb-3">
                       <h3
                         className={`text-sm font-medium ${feedbackConfig?.textColorClass}`}
@@ -415,12 +593,10 @@ export default function Home() {
                         })}
                       </span>
                     </div>
-
-                    {/* 草圖展示 */}
                     {record.imageUrl && (
                       <div className="mb-3">
                         <h4 className="text-sm font-medium text-gray-700 mb-2">
-                          你畫的草圖：
+                          你提交的圖像：
                         </h4>
                         <Image
                           src={record.imageUrl}
@@ -433,42 +609,28 @@ export default function Home() {
                         />
                       </div>
                     )}
-
-                    {/* AI 回饋內容 */}
                     <div className="mb-3">
                       <h5 className="text-sm font-semibold mb-2 text-gray-800">
                         設計建議
                       </h5>
-                      {/* 根據回饋的類型來渲染 */}
                       {record.feedback.type === "text" ? (
                         <div className="space-y-3">
-                          {typeof record.feedback.suggestions === "string" ? (
-                            <p
-                              className={`text-sm leading-relaxed text-gray-800 pl-3 border-l-2 ${feedbackConfig?.borderClass} ${feedbackConfig?.bgClass} p-2 rounded whitespace-pre-wrap`}
-                            >
-                              {record.feedback.suggestions}
-                            </p>
-                          ) : (
-                            <div
-                              className={`text-sm leading-relaxed text-gray-800 pl-3 border-l-2 ${feedbackConfig?.borderClass} ${feedbackConfig?.bgClass} p-2 rounded whitespace-pre-wrap space-y-2`}
-                            >
-                              {Object.entries(record.feedback.suggestions).map(
-                                ([key, value]) => (
-                                  <div key={key}>
-                                    <span className="font-semibold">
-                                      {key}:
-                                    </span>{" "}
-                                    {value}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          )}
+                          <p
+                            className={`text-sm leading-relaxed text-gray-800 pl-3 border-l-2 ${feedbackConfig?.borderClass} ${feedbackConfig?.bgClass} p-2 rounded whitespace-pre-wrap`}
+                          >
+                            {record.feedback.suggestions ||
+                              record.feedback.analysis}
+                          </p>
                         </div>
                       ) : record.feedback.type === "image" ? (
                         <div>
+                          {record.feedback.analysis && (
+                            <p className="text-xs italic text-gray-600 mb-2 p-2 bg-gray-50 rounded">
+                              {record.feedback.analysis}
+                            </p>
+                          )}
                           {record.feedback.suggestions && (
-                            <div className="mt-4">
+                            <div className="mt-2">
                               <Image
                                 src={record.feedback.suggestions}
                                 alt="AI 回饋圖像"
@@ -499,7 +661,7 @@ export default function Home() {
               <div className="text-center py-12">
                 <p className="text-gray-500 mb-2">尚未取得回饋</p>
                 <p className="text-xs text-gray-400">
-                  完成草圖後點擊「送出給 AI 回饋」開始
+                  完成草圖或上傳圖片後點擊「獲取 AI 回饋」開始
                 </p>
               </div>
             ) : null}

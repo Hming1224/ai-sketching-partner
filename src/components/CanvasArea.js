@@ -1,3 +1,4 @@
+// CanvasArea.js
 "use client";
 
 import {
@@ -10,7 +11,8 @@ import {
 import { getStroke } from "perfect-freehand";
 import getFlatSvgPathFromStroke from "@/lib/getFlatSvgPathFromStroke";
 
-const CanvasArea = forwardRef(({ brushOptions }, ref) => {
+// ✨ 讓元件能夠接收 props
+const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const canvasRef = useRef(null);
   const [points, setPoints] = useState([]);
   const [strokes, setStrokes] = useState([]);
@@ -23,6 +25,8 @@ const CanvasArea = forwardRef(({ brushOptions }, ref) => {
       setPoints([]);
       setStrokes([]);
       setUndoneStrokes([]);
+      // ✨ 狀態改變時通知父元件
+      if (onChange) onChange();
     },
     downloadCanvas() {
       const canvas = canvasRef.current;
@@ -45,6 +49,8 @@ const CanvasArea = forwardRef(({ brushOptions }, ref) => {
         const undone = newStrokes.pop();
         if (undone) {
           setUndoneStrokes((u) => [...u, undone]);
+          // ✨ 狀態改變時通知父元件
+          if (onChange) onChange();
         }
         return newStrokes;
       });
@@ -55,10 +61,14 @@ const CanvasArea = forwardRef(({ brushOptions }, ref) => {
         const restored = undone.pop();
         if (restored) {
           setStrokes((s) => [...s, restored]);
+          // ✨ 狀態改變時通知父元件
+          if (onChange) onChange();
         }
         return undone;
       });
     },
+    // ✨ 新增一個判斷畫布是否為空的方法
+    isEmpty: () => strokes.length === 0 && points.length === 0,
   }));
 
   const getCanvasPoint = (e) => {
@@ -88,6 +98,8 @@ const CanvasArea = forwardRef(({ brushOptions }, ref) => {
       setStrokes((prev) => [...prev, { points, options: { ...brushOptions } }]);
       setPoints([]);
       setUndoneStrokes([]); // 清空 redo stack
+      // ✨ 狀態改變時通知父元件
+      if (onChange) onChange();
     }
     setIsDrawing(false);
   };
