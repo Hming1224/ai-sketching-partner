@@ -2,10 +2,13 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createCanvas, loadImage } from "canvas";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 export async function POST(req) {
   try {
@@ -24,6 +27,7 @@ export async function POST(req) {
 
     switch (feedbackType) {
       case "sketch-text":
+        // ... 此區塊維持不變
         if (!imageFile) {
           return NextResponse.json(
             { error: "Missing image file for sketch-text feedback." },
@@ -59,7 +63,6 @@ export async function POST(req) {
         });
         const fullTextResponse =
           sketchTextResponse.choices?.[0]?.message?.content || "";
-        // 🚨 修正：直接將完整回覆作為建議內容
         feedback = {
           type: "text",
           suggestions: fullTextResponse,
@@ -67,6 +70,7 @@ export async function POST(req) {
         };
         break;
 
+      // START: MODIFIED TO USE GEMINI FOR IMAGE GENERATION
       case "sketch-image":
         if (!imageFile) {
           return NextResponse.json(
@@ -75,98 +79,119 @@ export async function POST(req) {
           );
         }
         try {
-          const analysisResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            max_tokens: 200,
-            messages: [
-              {
-                role: "system",
-                content: `你是一位專業的設計導師，請分析使用者提供的草圖，並根據其風格和內容，提供具體的改進建議描述。這些建議將直接用於圖像生成，請專注於如何讓設計在長照中心環境下更實用、美觀，且符合人體工學。**請用英文回覆，不要使用中文。**`,
-              },
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: `請分析我的草圖，並描述具體的改進建議。這些建議將用於生成一個改進版本的圖像。**請用英文回覆，不要使用中文。**`,
-                  },
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: `data:${imageFile.type};base64,${buffer.toString(
-                        "base64"
-                      )}`,
-                    },
-                  },
-                ],
-              },
-            ],
+          // ==========================================================
+          // 步驟 1: AI 創意發想與視覺分析 (使用 Gemini)
+          // ==========================================================
+          const ideationModel = genAI.getGenerativeModel({
+            model: "gemini-1.5-pro-latest",
           });
-          const analysisText =
-            analysisResponse.choices?.[0]?.message?.content || "";
-          const imageBuffer = buffer;
-          const originalImage = await loadImage(imageBuffer);
-          const imageWidth = originalImage.width;
-          const imageHeight = originalImage.height;
-          const totalPixels = imageWidth * imageHeight;
-          const MIN_PIXELS = 262144;
-          let finalBuffer = imageBuffer;
-          if (totalPixels < MIN_PIXELS) {
-            const newWidth = 1024;
-            const newHeight = 1024;
-            const canvas = createCanvas(newWidth, newHeight);
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(originalImage, 0, 0, newWidth, newHeight);
-            finalBuffer = canvas.toBuffer("image/png");
+          const imagePart = {
+            inlineData: {
+              data: buffer.toString("base64"),
+              mimeType: imageFile.type,
+            },
+          };
+          const ideationPrompt = `You are an innovative industrial designer specializing in healthcare furniture.
+          Analyze the user's sketch and the design context: "${taskDescription}".
+          
+          Your tasks are:
+          1.  **Ideate ONE concrete improvement.** Choose one aspect (Function, Material, or Structure) and propose a single, actionable modification suitable for the context.
+          2.  **Analyze the sketch's style.** Describe its visual characteristics in detail.
+          
+          Respond ONLY with a valid JSON object in the following format, with no other text before or after it:
+          {
+            "aspect": "Function | Material | Structure",
+            "modification_idea_english": "A concise sentence in English describing your idea. For example: 'Add small, lockable caster wheels to the legs.'",
+            "sketch_style_analysis_english": "A detailed English description of the sketch's style, including line quality, perspective, and form. For example: 'A simple, hand-drawn sketch with thick, slightly wobbly black lines and a clean 3/4 perspective.'"
+          }`;
+
+          // 🚨 修正點 #1：直接傳遞 Parts 陣列
+          const ideationResult = await ideationModel.generateContent([
+            { text: ideationPrompt },
+            imagePart,
+          ]);
+          const ideationResponseText = ideationResult.response.text();
+
+          // ==========================================================
+          // 步驟 2: 解析 AI 的 JSON 回應
+          // ==========================================================
+          let aiIdea;
+          try {
+            const cleanedJsonText = ideationResponseText.replace(
+              /^```json\n|```$/g,
+              ""
+            );
+            aiIdea = JSON.parse(cleanedJsonText);
+          } catch (e) {
+            throw new Error(
+              "AI (Ideation) failed to return valid JSON. Please try again."
+            );
           }
-          const apiHost = "https://api.stability.ai";
-          const formData = new FormData();
-          formData.append("init_image", new Blob([finalBuffer]), "sketch.png");
-          formData.append("steps", "50");
-          formData.append("cfg_scale", "7.5");
-          formData.append("clip_guidance_preset", "FAST_BLUE");
-          formData.append("sampler", "K_DPMPP_2M");
-          formData.append("samples", "1");
-          formData.append("text_prompts[0][text]", `${analysisText}`);
-          formData.append("text_prompts[0][weight]", "0.5");
-          formData.append(
-            "text_prompts[1][text]",
-            "low quality, bad anatomy, ugly, deformed, blurry, grainy, bad composition, watermark, text, signature, cartoon, illustration, amateur, messy background, grey background, dirty background, crowded, busy, distracting elements"
+
+          const { modification_idea_english, sketch_style_analysis_english } =
+            aiIdea;
+
+          // ==========================================================
+          // 步驟 3: 組合給 Gemini 的【繪圖】指令
+          // ==========================================================
+          const executionTextPrompt = `Act as a skilled sketch artist who perfectly mimics other styles.
+          
+          **Target Style to Replicate:**
+          You MUST perfectly replicate the original's hand-drawn style as described here: "${sketch_style_analysis_english}". The perspective, composition, and line quality must be identical. The final image should look like it was drawn by the same person who created the original sketch.
+          
+          **Required Modification:**
+          Integrate ONLY the following change into the base sketch: "${modification_idea_english}"`;
+
+          // ==========================================================
+          // 步驟 4: 執行繪圖 (使用 Gemini)
+          // ==========================================================
+          const imageGenModel = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash-image-preview",
+          });
+
+          const executionPromptParts = [
+            { text: executionTextPrompt },
+            imagePart,
+          ];
+
+          // 🚨 修正點 #2：直接傳遞 Parts 陣列
+          const imageGenResult = await imageGenModel.generateContent(
+            executionPromptParts
           );
-          formData.append("text_prompts[1][weight]", "-1");
-          const imageResponse = await fetch(
-            `${apiHost}/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${process.env.STABILITY_AI_API_KEY}`,
-                Accept: "application/json",
-              },
-              body: formData,
-            }
-          );
-          if (!imageResponse.ok) {
-            const errorData = await imageResponse.json();
-            throw new Error(JSON.stringify(errorData));
+          const imageGenResponse = imageGenResult.response;
+
+          const imagePartResponse =
+            imageGenResponse.candidates?.[0]?.content?.parts?.find(
+              (part) => part.inlineData
+            );
+
+          if (!imagePartResponse) {
+            throw new Error("Gemini (Image Gen) did not return an image.");
           }
-          const imageData = await imageResponse.json();
-          const suggestions = `data:image/png;base64,${imageData.artifacts[0].base64}`;
+
+          const base64ImageData = imagePartResponse.inlineData.data;
+          const mimeType = imagePartResponse.inlineData.mimeType;
+          const suggestions = `data:${mimeType};base64,${base64ImageData}`;
+
           feedback = {
             type: "image",
             suggestions: suggestions,
-            analysis: analysisText,
+            analysis: `AI Suggestion (${aiIdea.aspect}):\n${modification_idea_english}`,
           };
         } catch (error) {
           console.error("圖像生成錯誤:", error);
           feedback = {
             type: "text",
-            suggestions: "圖像生成暫時不可用，請參考上方的文字分析建議。",
-            analysis: "",
+            suggestions:
+              "圖像生成失敗，AI 可能無法理解圖片或生成有效的想法，請稍後再試。",
+            analysis: error.message,
           };
         }
         break;
+      // END: FIXED API CALL FORMAT
 
       case "task-text":
+        // ... 此區塊維持不變
         const taskTextResponse = await openai.chat.completions.create({
           model: "gpt-4o",
           max_tokens: 400,
@@ -183,7 +208,6 @@ export async function POST(req) {
         });
         const fullTaskTextResponse =
           taskTextResponse.choices?.[0]?.message?.content || "";
-        // 🚨 修正：直接將完整回覆作為建議內容
         feedback = {
           type: "text",
           suggestions: fullTaskTextResponse,
@@ -192,6 +216,7 @@ export async function POST(req) {
         break;
 
       case "task-image":
+        // ... 此區塊維持不變
         const taskImageResponse = await openai.chat.completions.create({
           model: "gpt-4o",
           max_tokens: 300,
@@ -208,7 +233,7 @@ export async function POST(req) {
         });
         const taskImageDescription =
           taskImageResponse.choices?.[0]?.message?.content || "";
-        const dallEResponse = await openai.images.generate({
+        const dallEResponseForTask = await openai.images.generate({
           model: "dall-e-3",
           prompt: `Design concept for: ${taskDescription}. ${taskImageDescription}.`,
           size: "1024x1024",
@@ -217,7 +242,7 @@ export async function POST(req) {
         });
         feedback = {
           type: "image",
-          suggestions: dallEResponse.data[0].url,
+          suggestions: dallEResponseForTask.data[0].url,
           analysis: taskImageDescription,
         };
         break;

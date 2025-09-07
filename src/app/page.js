@@ -145,7 +145,6 @@ export default function Home() {
   };
 
   // 統一的 AI 回饋函數、處理 JSON 結構回應
-  // 統一的 AI 回饋函數、處理 JSON 結構回應
   const handleSendToAI = async () => {
     if (!isLoggedIn) {
       console.error("受試者未登入");
