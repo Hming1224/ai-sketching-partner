@@ -1,4 +1,4 @@
-// page.js code
+// page.js
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -11,7 +11,6 @@ import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
 import { X } from "lucide-react";
 
-// 配合你的 BrushSettingsPanel 的預設值
 const DEFAULT_BRUSH_OPTIONS = {
   size: 8,
   thinning: 0.5,
@@ -20,7 +19,6 @@ const DEFAULT_BRUSH_OPTIONS = {
   color: "#000000",
 };
 
-// 模式配置
 const FEEDBACK_MODES = {
   "sketch-text": {
     title: "草圖文字分析",
@@ -67,45 +65,45 @@ export default function Home() {
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [brushOptions, setBrushOptions] = useState(DEFAULT_BRUSH_OPTIONS);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
-
   const [uploadedImageFile, setUploadedImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
-
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
   const canvasRef = useRef();
   const [prompt, setPrompt] = useState(
     "請您繪製一張能夠在長照中心使用的椅子，您可以從不同設計面向去思考這張椅子的功能、結構、材質等，任何發想形式或呈現手法不侷限，您可以嘗試想像在這樣環境中會有什麼樣使用者，他們會如何使用這樣椅子，請您盡可能繪製越多草圖越好。"
   );
-
   const [targetUser, setTargetUser] = useState("");
   const [userNeed, setUserNeed] = useState("");
   const [isSaved, setIsSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  // ✨ 新增 state 來追蹤畫布是否為空
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
+  const areInputsEmpty = !targetUser && !userNeed;
+
+  useEffect(() => {
+    const canvasInstance = canvasRef.current;
+    if (canvasInstance) {
+      const handleCanvasChange = () => {
+        setIsCanvasEmpty(canvasInstance.isEmpty());
+      };
+      canvasInstance.addChangeListener(handleCanvasChange);
+      return () => {
+        canvasInstance.removeChangeListener(handleCanvasChange);
+      };
+    }
+  }, []);
 
   const handleUserInputChange = (setter, value) => {
     setter(value);
     setIsEditing(true);
   };
-
-  useEffect(() => {
-    if (selectedMode !== "sketch-image") {
-      setIsSaved(false);
-      setIsEditing(false);
-      setTargetUser("");
-      setUserNeed("");
-    }
-  }, [selectedMode]);
-
   const handleUndo = () => canvasRef.current?.undo();
   const handleRedo = () => canvasRef.current?.redo();
   const handleClear = () => {
     const confirmed = confirm("確定要清除畫布嗎？此操作無法復原。");
     if (!confirmed) return;
     canvasRef.current?.clearCanvas();
-    setIsCanvasEmpty(true); // ✨ 清除畫布後，直接更新狀態
+    setIsCanvasEmpty(true);
   };
   const handleDownload = () => canvasRef.current?.downloadCanvas();
   const handleParticipantLogin = async () => {
@@ -142,10 +140,8 @@ export default function Home() {
     setIsEditing(false);
     setTargetUser("");
     setUserNeed("");
-    // ✨ 重設畫布狀態
     setIsCanvasEmpty(true);
   };
-
   const handleUploadButtonClick = () => fileInputRef.current?.click();
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -153,7 +149,7 @@ export default function Home() {
       setUploadedImageFile(file);
       setImagePreviewUrl(URL.createObjectURL(file));
       canvasRef.current?.clearCanvas();
-      setIsCanvasEmpty(false); // ✨ 上傳圖片後，畫布不再是空的
+      setIsCanvasEmpty(false);
     }
   };
   const handleClearUploadedImage = () => {
@@ -162,49 +158,29 @@ export default function Home() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-    // ✨ 清除圖片後，檢查畫布是否為空
     setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
   };
-
   const handleSaveInputs = () => {
-    if (!targetUser && !userNeed) {
+    if (areInputsEmpty) {
       alert("請至少輸入一項內容後再儲存。");
       return;
     }
     setIsSaved(true);
     setIsEditing(false);
   };
-
   const handleEditInputs = () => {
     setIsEditing(true);
   };
-  // ✨ 處理畫布狀態變化的回調函式
-  const handleCanvasChange = () => {
-    if (canvasRef.current) {
-      setIsCanvasEmpty(canvasRef.current.isEmpty());
-    }
-  };
 
   const handleSendToAI = async () => {
-    if (!isLoggedIn) {
-      console.error("受試者未登入");
-      return;
-    }
+    if (!isLoggedIn) return;
     if (!isSaved) {
       alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
       return;
     }
-    // ✨ 直接在發送前檢查畫布
-    const isCanvasEmpty = canvasRef.current?.isEmpty();
-    if (isCanvasEmpty) {
-      alert("請先在畫布上繪圖。");
-      return;
-    }
-    console.log(`handleSendToAI (Canvas) 開始執行，模式: ${selectedMode}`);
     const blob = await canvasRef.current?.getCanvasImageBlob();
     if (!blob) {
       alert("請先在畫布上繪圖。");
-      console.error("無法取得畫布影像");
       return;
     }
     setIsLoadingAI(true);
@@ -250,10 +226,7 @@ export default function Home() {
   };
 
   const handleSendUploadedImageToAI = async () => {
-    if (!isLoggedIn) {
-      console.error("受試者未登入");
-      return;
-    }
+    if (!isLoggedIn) return;
     if (!uploadedImageFile) {
       alert("沒有已上傳的圖片。");
       return;
@@ -262,8 +235,6 @@ export default function Home() {
       alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
       return;
     }
-
-    console.log(`handleSendUploadedImageToAI 開始執行，模式: ${selectedMode}`);
     setIsLoadingAI(true);
     const formData = new FormData();
     formData.append("taskDescription", prompt);
@@ -307,9 +278,78 @@ export default function Home() {
     }
   };
 
-  // 最終的按鈕禁用邏輯
   const isSendButtonDisabled =
-    isLoadingAI || !isSaved || (!uploadedImageFile && isCanvasEmpty); // ✨ 直接使用 isCanvasEmpty state
+    isLoadingAI || !isSaved || (!uploadedImageFile && isCanvasEmpty);
+
+  const renderFeedbackDetails = (analysis, mode) => {
+    if (!analysis || typeof analysis !== "object" || analysis.error) {
+      return (
+        <p className="text-sm text-gray-500">回饋內容載入中...或生成失敗</p>
+      );
+    }
+
+    const isTaskMode = mode.includes("task");
+    const isSketchMode = mode.includes("sketch");
+    const hasUserNeed =
+      analysis.target_user_chinese && analysis.key_user_need_chinese;
+    const hasModifications =
+      analysis.modification_function_chinese ||
+      analysis.modification_structure_chinese ||
+      analysis.modification_material_chinese;
+
+    // Only render for text-based modes
+    if (mode === "sketch-text" || mode === "task-text") {
+      return (
+        <div className="space-y-4">
+          {isTaskMode && hasUserNeed && (
+            <div className="bg-gray-100 p-3 rounded-md">
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="font-semibold">設計對象：</span>
+                  {analysis.target_user_chinese}
+                </p>
+                <p>
+                  <span className="font-semibold">用戶需求：</span>
+                  {analysis.key_user_need_chinese}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {isSketchMode && analysis.sketch_style_analysis_chinese && (
+            <div className="bg-gray-100 p-3 rounded-md">
+              <strong className="block mb-1">草圖分析</strong>
+              <div className="text-sm">
+                {analysis.sketch_style_analysis_chinese}
+              </div>
+            </div>
+          )}
+
+          {hasModifications && (
+            <div className="bg-gray-100 p-3 rounded-md">
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="font-semibold">功能：</span>
+                  {analysis.modification_function_chinese}
+                </p>
+                <p>
+                  <span className="font-semibold">結構：</span>
+                  {analysis.modification_structure_chinese}
+                </p>
+                <p>
+                  <span className="font-semibold">材質：</span>
+                  {analysis.modification_material_chinese}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // For sketch-image and task-image, return null to render nothing
+    return null;
+  };
 
   return (
     <div className="relative">
@@ -417,66 +457,62 @@ export default function Home() {
             <p className="text-sm">{prompt}</p>
           </div>
 
-          {
-            <div className="space-y-4 p-4 rounded bg-gray-100 border">
-              <h3 className="text-lg font-bold">🎯 定義設計情境</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  我的設計對象是：
-                </label>
-                <Input
-                  type="text"
-                  value={targetUser}
-                  onChange={(e) =>
-                    handleUserInputChange(setTargetUser, e.target.value)
-                  }
-                  placeholder="例如：久坐的老年人"
-                  className="w-full"
-                  disabled={isSaved && !isEditing}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  我認為他們有什麼樣需求：
-                </label>
-                <Input
-                  type="text"
-                  value={userNeed}
-                  onChange={(e) =>
-                    handleUserInputChange(setUserNeed, e.target.value)
-                  }
-                  placeholder="例如：需要舒適且透氣的椅面"
-                  className="w-full"
-                  disabled={isSaved && !isEditing}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  onClick={handleSaveInputs}
-                  disabled={!isEditing || (!targetUser && !userNeed)}
-                  className="bg-gray-800 text-white hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  儲存
-                </Button>
-                <Button
-                  onClick={handleEditInputs}
-                  disabled={!isSaved || isEditing}
-                  className="bg-gray-500 text-white hover:bg-gray-400 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  修改
-                </Button>
-                {isSaved ? (
-                  <span className="text-green-600 text-sm font-medium">
-                    已儲存，可以開始繪圖。
-                  </span>
-                ) : (
-                  <span className="text-gray-500 text-sm">
-                    輸入後請儲存，否則無法獲得回饋。
-                  </span>
-                )}
-              </div>
+          <div className="space-y-4 p-4 rounded bg-gray-100 border">
+            <h3 className="text-lg font-bold">🎯 定義設計情境</h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                我的設計對象是：
+              </label>
+              <Input
+                type="text"
+                value={targetUser}
+                onChange={(e) =>
+                  handleUserInputChange(setTargetUser, e.target.value)
+                }
+                placeholder="例如：久坐的老年人"
+                disabled={isSaved && !isEditing}
+              />
             </div>
-          }
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                我認為他們有什麼樣需求：
+              </label>
+              <Input
+                type="text"
+                value={userNeed}
+                onChange={(e) =>
+                  handleUserInputChange(setUserNeed, e.target.value)
+                }
+                placeholder="例如：需要舒適且透氣的椅面"
+                disabled={isSaved && !isEditing}
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={handleSaveInputs}
+                disabled={!isEditing || areInputsEmpty}
+                className="bg-gray-800 text-white hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                儲存
+              </Button>
+              <Button
+                onClick={handleEditInputs}
+                disabled={!isSaved || isEditing}
+                className="bg-gray-500 text-white hover:bg-gray-400 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                修改
+              </Button>
+              {isSaved ? (
+                <span className="text-green-600 text-sm font-medium">
+                  已儲存，可以開始繪圖。
+                </span>
+              ) : (
+                <span className="text-gray-500 text-sm">
+                  輸入後請儲存，否則無法獲得回饋。
+                </span>
+              )}
+            </div>
+          </div>
 
           <BrushSettingsPanel
             options={brushOptions}
@@ -489,7 +525,9 @@ export default function Home() {
             <CanvasArea
               ref={canvasRef}
               brushOptions={brushOptions}
-              onChange={handleCanvasChange} // ✨ 將回調函式傳遞給 CanvasArea
+              onChange={() =>
+                setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true)
+              }
             />
             {imagePreviewUrl && (
               <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-400 rounded-lg">
@@ -527,11 +565,9 @@ export default function Home() {
               <Button onClick={handleRedo}>重做</Button>
               <Button onClick={handleClear}>清除畫布</Button>
               <Button onClick={handleDownload}>下載繪圖</Button>
-
               <Button onClick={handleUploadButtonClick} variant="outline">
                 上傳圖片 (臨時)
               </Button>
-
               <Button
                 onClick={
                   uploadedImageFile
@@ -593,66 +629,45 @@ export default function Home() {
                         })}
                       </span>
                     </div>
-                    {record.imageUrl && (
+                     {/* ✨ 添加條件判斷 */}
+                     {(record.feedbackMode === 'sketch-text' || record.feedbackMode === 'sketch-image') && record.imageUrl && (
                       <div className="mb-3">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">
-                          你提交的圖像：
-                        </h4>
-                        <Image
-                          src={record.imageUrl}
-                          alt="受試者草圖"
-                          width={200}
-                          height={200}
-                          className="w-full max-w-48 max-h-48 object-contain border rounded cursor-pointer hover:opacity-80 transition-opacity mx-auto block"
-                          onClick={() => window.open(record.imageUrl, "_blank")}
-                          title="點擊查看大圖"
-                        />
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">你當前的設計：</h4>
+                        <Image src={record.imageUrl} alt="受試者草圖" width={200} height={200} className="w-full max-w-48 max-h-48 object-contain border rounded cursor-pointer hover:opacity-80 transition-opacity mx-auto block" onClick={() => window.open(record.imageUrl, "_blank")} title="點擊查看大圖" />
                       </div>
                     )}
                     <div className="mb-3">
-                      <h5 className="text-sm font-semibold mb-2 text-gray-800">
-                        設計建議
+                      <h5 className="text-sm font-medium mb-2 text-gray-700">
+                        設計建議：
                       </h5>
-                      {record.feedback.type === "text" ? (
-                        <div className="space-y-3">
-                          <p
-                            className={`text-sm leading-relaxed text-gray-800 pl-3 border-l-2 ${feedbackConfig?.borderClass} ${feedbackConfig?.bgClass} p-2 rounded whitespace-pre-wrap`}
-                          >
-                            {record.feedback.suggestions ||
-                              record.feedback.analysis}
-                          </p>
-                        </div>
-                      ) : record.feedback.type === "image" ? (
-                        <div>
-                          {record.feedback.analysis && (
-                            <p className="text-xs italic text-gray-600 mb-2 p-2 bg-gray-50 rounded">
-                              {record.feedback.analysis}
-                            </p>
-                          )}
-                          {record.feedback.suggestions && (
-                            <div className="mt-2">
-                              <Image
-                                src={record.feedback.suggestions}
-                                alt="AI 回饋圖像"
-                                width={512}
-                                height={512}
-                                className="rounded-lg shadow-md w-full h-auto cursor-pointer"
-                                onClick={() =>
-                                  window.open(
-                                    record.feedback.suggestions,
-                                    "_blank"
-                                  )
-                                }
-                                title="點擊查看大圖"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">
-                          回饋內容載入中...
-                        </p>
-                      )}
+                      {/* 如果有圖片則顯示圖片 */}
+                      {record.feedback.type === "image" &&
+                        record.feedback.suggestions && (
+                          <div className="mt-2 mb-4">
+                            <Image
+                              src={record.feedback.suggestions}
+                              alt="AI 回饋圖像"
+                              width={512}
+                              height={512}
+                              className="rounded-lg shadow-md w-full h-auto cursor-pointer"
+                              onClick={() =>
+                                window.open(
+                                  record.feedback.suggestions,
+                                  "_blank"
+                                )
+                              }
+                              title="點擊查看大圖"
+                            />
+                          </div>
+                        )}
+                      {/* 如果是 sketch-text 或 task-text 模式，才顯示文字回饋框 */}
+                      {(record.feedbackMode === "sketch-text" ||
+                        record.feedbackMode === "task-text") &&
+                        record.feedback.analysis &&
+                        renderFeedbackDetails(
+                          record.feedback.analysis,
+                          record.feedbackMode
+                        )}
                     </div>
                   </div>
                 );

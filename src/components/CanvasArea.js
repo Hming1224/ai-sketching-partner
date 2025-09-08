@@ -7,11 +7,11 @@ import {
   useEffect,
   useImperativeHandle,
   forwardRef,
+  useCallback,
 } from "react";
 import { getStroke } from "perfect-freehand";
 import getFlatSvgPathFromStroke from "@/lib/getFlatSvgPathFromStroke";
 
-// ✨ 讓元件能夠接收 props
 const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const canvasRef = useRef(null);
   const [points, setPoints] = useState([]);
@@ -19,14 +19,30 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const [undoneStrokes, setUndoneStrokes] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  // ✨ 新增監聽器系統
+  const changeListeners = useRef(new Set());
+  const notifyChange = useCallback(() => {
+    changeListeners.current.forEach((listener) => listener());
+  }, []);
+
   // 提供給 parent 的操作方法
   useImperativeHandle(ref, () => ({
+    // ✨ 暴露 isEmpty 方法
+    isEmpty: () => strokes.length === 0 && points.length === 0,
+
+    // ✨ 暴露監聽器方法
+    addChangeListener: (listener) => {
+      changeListeners.current.add(listener);
+    },
+    removeChangeListener: (listener) => {
+      changeListeners.current.delete(listener);
+    },
+
     clearCanvas() {
       setPoints([]);
       setStrokes([]);
       setUndoneStrokes([]);
-      // ✨ 狀態改變時通知父元件
-      if (onChange) onChange();
+      notifyChange(); // 狀態改變時通知父元件
     },
     downloadCanvas() {
       const canvas = canvasRef.current;
@@ -49,8 +65,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
         const undone = newStrokes.pop();
         if (undone) {
           setUndoneStrokes((u) => [...u, undone]);
-          // ✨ 狀態改變時通知父元件
-          if (onChange) onChange();
+          notifyChange(); // 狀態改變時通知父元件
         }
         return newStrokes;
       });
@@ -61,14 +76,11 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
         const restored = undone.pop();
         if (restored) {
           setStrokes((s) => [...s, restored]);
-          // ✨ 狀態改變時通知父元件
-          if (onChange) onChange();
+          notifyChange(); // 狀態改變時通知父元件
         }
         return undone;
       });
     },
-    // ✨ 新增一個判斷畫布是否為空的方法
-    isEmpty: () => strokes.length === 0 && points.length === 0,
   }));
 
   const getCanvasPoint = (e) => {
@@ -98,13 +110,11 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
       setStrokes((prev) => [...prev, { points, options: { ...brushOptions } }]);
       setPoints([]);
       setUndoneStrokes([]); // 清空 redo stack
-      // ✨ 狀態改變時通知父元件
-      if (onChange) onChange();
+      notifyChange(); // 狀態改變時通知父元件
     }
     setIsDrawing(false);
   };
 
-  // 繪製所有筆畫
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
