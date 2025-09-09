@@ -220,7 +220,7 @@ const CanvasArea = forwardRef(({ brushOptions }, ref) => {
         id="drawing-canvas" // 為頂層畫布加上 ID
         width={500}
         height={400}
-        className="w-full touch-none"
+        className="w-full touch-none select-none"
         style={{
           position: "absolute",
           top: 0,
