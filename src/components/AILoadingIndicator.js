@@ -6,34 +6,45 @@ const AILoadingIndicator = ({ config }) => {
   }
 
   return (
-    <div
-      className={`p-4 bg-white rounded-md shadow-sm border-l-4 ${config.borderClass} animate-pulse`}
-    >
-      <div className="flex items-center space-x-2 mb-3">
-        <h3 className={`text-sm font-medium ${config.textColorClass}`}>
-          AI 正在分析中
-        </h3>
-        {/* 三個跳動圓點 */}
-        <div className="flex items-center space-x-1">
-          <div
-            className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
-          ></div>
-          <div
-            className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
-            style={{ animationDelay: "0.1s" }}
-          ></div>
-          <div
-            className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
-            style={{ animationDelay: "0.2s" }}
-          ></div>
+    <div className="flex items-start gap-3">
+      <div className="flex-shrink-0">
+        <div
+          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+            config.dotBg || "bg-gray-400"
+          } text-white`}
+        >
+          AI
         </div>
       </div>
+      <div
+        className={`p-4 bg-white rounded-md shadow-sm border-l-4 ${config.borderClass} animate-pulse`}
+      >
+        <div className="flex items-center space-x-2 mb-3">
+          <h3 className={`text-sm font-medium ${config.textColorClass}`}>
+            AI 正在分析中
+          </h3>
+          {/* 三個跳動圓點 */}
+          <div className="flex items-center space-x-1">
+            <div
+              className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
+            ></div>
+            <div
+              className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
+              style={{ animationDelay: "0.1s" }}
+            ></div>
+            <div
+              className={`w-1.5 h-1.5 ${config.dotBg} rounded-full animate-bounce`}
+              style={{ animationDelay: "0.2s" }}
+            ></div>
+          </div>
+        </div>
 
-      <div className="flex items-center space-x-3">
-        <div className="flex items-center space-x-1">
-          <span className="text-sm text-gray-500">
-            正在生成設計建議，請稍候
-          </span>
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1">
+            <span className="text-sm text-gray-500">
+              正在生成設計建議，請稍候
+            </span>
+          </div>
         </div>
       </div>
     </div>

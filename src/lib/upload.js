@@ -78,7 +78,7 @@ export async function uploadSketchAndFeedback(
       taskDescription: taskDescription,
       userSketchUrl: userSketchUrl,
       aiFeedbackSuggestionsUrl: aiSuggestionsUrl,
-      aiFeedbackAnalysis: aiAnalysis,
+      aiFeedbackSuggestions: aiAnalysis,
       feedbackMode: feedbackMode,
       timestamp: serverTimestamp(),
     };

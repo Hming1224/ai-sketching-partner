@@ -1,11 +1,6 @@
 // route.js code
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
@@ -40,7 +35,7 @@ export async function POST(req) {
           
           Respond ONLY with a valid JSON object in the following format, with no other text before or after it:
           {
-            "sketch_style_analysis_english": "A detailed English description of the sketch's style...",
+            
             "modification_function_english": "A concise sentence in English describing a functional idea.",
             "modification_structure_english": "A concise sentence in English describing a structural idea.",
             "modification_material_english": "A concise sentence in English describing a material idea.",
@@ -203,7 +198,7 @@ export async function POST(req) {
         "modification_function_english",
         "modification_structure_english",
         "modification_material_english",
-        "sketch_style_analysis_english",
+      
       ];
       for (const key of keys) {
         if (aiIdea[key]) {
