@@ -52,7 +52,7 @@ const FEEDBACK_MODES = {
     title: "任務文字發想",
     description: "AI 基於任務描述提供創意文字建議",
     borderClass: "border-[#00C59F]",
-    bgClass: "bg-[#E4FFFA]",
+    bgClass: "bg-[#E7F6F3]",
     dotBorder: "border-[#00C59F]",
     dotBg: "bg-[#00C59F]",
     textColorClass: "text-[#005D4B]",
