@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion";
 
 const DEFAULT_BRUSH_OPTIONS = {
-  size: 12,
+  size: 8,
   thinning: 0.5,
   streamline: 0.8,
   smoothing: 0.6,
