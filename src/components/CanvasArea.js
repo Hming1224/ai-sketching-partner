@@ -196,6 +196,10 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   };
 
   const handlePointerDown = (e) => {
+    // 如果事件來自觸控 (手指或手掌)，則直接忽略，不開始繪圖
+    if (e.pointerType === "touch") {
+      return;
+    }
     if (e.button !== 0 && e.pointerType === "mouse") return;
     setIsDrawing(true);
     const coords = getCanvasCoords(e, drawingCanvasRef.current);
