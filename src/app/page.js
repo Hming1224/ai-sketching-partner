@@ -51,11 +51,11 @@ const FEEDBACK_MODES = {
   "task-text": {
     title: "任務文字發想",
     description: "AI 基於任務描述提供創意文字建議",
-    borderClass: "border-green-400",
-    bgClass: "bg-green-50",
-    dotBorder: "border-green-400",
-    dotBg: "bg-green-400",
-    textColorClass: "text-green-700",
+    borderClass: "border-[#00C59F]",
+    bgClass: "bg-[#E4FFFA]",
+    dotBorder: "border-[#00C59F]",
+    dotBg: "bg-[#00C59F]",
+    textColorClass: "text-[#005D4B]",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務提供文字想法給你參考，您可以將這些想法作為靈感來繪製草圖。",
   },
@@ -501,7 +501,7 @@ export default function Home() {
 
           {/* 受試者資訊 */}
           <div
-            className={`p-3 ${currentModeConfig?.bgClass} rounded flex justify-between items-center`}
+            className={`border px-6 py-4 ${currentModeConfig?.bgClass} rounded flex justify-between items-center`}
           >
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">受試者：</span>
@@ -525,70 +525,73 @@ export default function Home() {
             defaultValue={["task", "context"]}
             className="w-full space-y-4"
           >
-            <AccordionItem
-              value="task"
-              className="border rounded bg-gray-100 px-4"
-            >
-              <AccordionTrigger className="text-lg font-bold">
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">📜</span>
-                  <span>設計任務</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-6 px-6">
-                <p className="text-sm  leading-[1.6]">{prompt}</p>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    目標受眾：
-                  </label>
-                  <Input
-                    type="text"
-                    value={targetUser}
-                    onChange={(e) =>
-                      handleUserInputChange(setTargetUser, e.target.value)
-                    }
-                    placeholder="您覺得這張椅子是誰來使用？"
-                    disabled={isSaved}
-                    className={`${inputFocusStyle} ${
-                      isSaved ? "bg-muted text-muted-foreground" : "bg-white"
-                    }`}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    用戶需求：
-                  </label>
-                  <Input
-                    type="text"
-                    value={userNeed}
-                    onChange={(e) =>
-                      handleUserInputChange(setUserNeed, e.target.value)
-                    }
-                    placeholder="您覺得這些用戶需要滿足的事情是什麼？"
-                    disabled={isSaved}
-                    className={`${inputFocusStyle} ${
-                      isSaved ? "bg-muted text-muted-foreground" : "bg-white"
-                    }`}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={handleSaveInputs}
-                    disabled={!isEditing || isSaveButtonDisabled}
-                  >
-                    儲存
-                  </Button>
-                  {isSaved ? (
-                    <span className="text-green-600 text-xs font-medium">
-                      已鎖定，可以開始繪圖。
-                    </span>
-                  ) : (
-                    <span className="text-gray-500 text-xs">
-                      輸入後請儲存以鎖定情境。
-                    </span>
-                  )}
-                </div>
-              </AccordionContent>
+            <AccordionItem value="task" className="border-b-0">
+              <div
+                className={`border rounded ${currentModeConfig?.bgClass} overflow-hidden`}
+              >
+                <AccordionTrigger className="text-lg font-bold px-6">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-xl">📜</span>
+                    <span>設計任務</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-6 px-6">
+                  <p className="text-sm  leading-[1.6]">{prompt}</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      目標受眾：
+                    </label>
+                    <Input
+                      type="text"
+                      value={targetUser}
+                      onChange={(e) =>
+                        handleUserInputChange(setTargetUser, e.target.value)
+                      }
+                      placeholder="您覺得這張椅子是誰來使用？"
+                      disabled={isSaved}
+                      className={`${inputFocusStyle} ${
+                        isSaved ? "bg-muted text-muted-foreground" : "bg-white"
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      用戶需求：
+                    </label>
+                    <Input
+                      type="text"
+                      value={userNeed}
+                      onChange={(e) =>
+                        handleUserInputChange(setUserNeed, e.target.value)
+                      }
+                      placeholder="您覺得這些用戶需要滿足的事情是什麼？"
+                      disabled={isSaved}
+                      className={`${inputFocusStyle} ${
+                        isSaved ? "bg-muted text-muted-foreground" : "bg-white"
+                      }`}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={handleSaveInputs}
+                      disabled={!isEditing || isSaveButtonDisabled}
+                    >
+                      儲存
+                    </Button>
+                    {isSaved ? (
+                      <span
+                        className={`${currentModeConfig?.textColorClass} text-xs font-medium`}
+                      >
+                        已鎖定，可以開始繪圖。
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        輸入後請儲存以鎖定情境。
+                      </span>
+                    )}
+                  </div>
+                </AccordionContent>
+              </div>
             </AccordionItem>
           </Accordion>
 
@@ -602,7 +605,9 @@ export default function Home() {
           /> */}
 
           {/* [內容移動] 將 AI 回饋面板從右側移入此處 */}
-          <div className="border p-4 rounded bg-gray-100 h-full flex flex-col min-h-[500px]">
+          <div
+            className={`border px-6 py-4 rounded ${currentModeConfig?.bgClass} h-full flex flex-col min-h-[500px]`}
+          >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
               {feedbackHistory.length > 0 && (
@@ -724,7 +729,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div
-                        className={`flex flex-col flex-grow p-4 bg-white rounded-md shadow-sm border-l-4 ${currentModeConfig?.borderClass} space-y-6`}
+                        className={`flex flex-col flex-grow p-4 bg-white rounded-md shadow-sm border border-l-4 ${currentModeConfig?.borderClass} space-y-6`}
                       >
                         <h4 className="text-sm leading-[1.6]">
                           {currentModeConfig?.welcomeMessage}
@@ -752,7 +757,7 @@ export default function Home() {
           {/* ----- 以下是右側欄內容 ----- */}
 
           {/* [內容移動] 將畫布和其控制按鈕移入此處 */}
-          <div className="relative flex-grow h-full">
+          <div className="relative flex-grow rounded h-full">
             <CanvasArea
               ref={canvasRef}
               brushOptions={brushOptions}

@@ -230,7 +230,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full relative">
+    <div ref={containerRef} className="w-full h-full relative rounded">
       <canvas
         ref={mainCanvasRef}
         id="main-canvas"
@@ -243,14 +243,14 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
           zIndex: 0,
           background: "white", // 這裡的背景色很重要，確保 canvas 元素本身有白色背景
         }}
-        className="w-full h-full border touch-none select-none"
+        className="w-full h-full border touch-none select-none rounded"
       />
       <canvas
         ref={drawingCanvasRef}
         id="drawing-canvas"
         width={dimensions.width}
         height={dimensions.height}
-        className="w-full h-full touch-none select-none"
+        className="w-full h-full touch-none select-none rounded"
         style={{
           position: "absolute",
           top: 0,
