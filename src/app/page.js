@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion";
 
 const DEFAULT_BRUSH_OPTIONS = {
-  size: 3,
+  size: 12,
   thinning: 0.5,
   streamline: 0.8,
   smoothing: 0.6,
@@ -27,22 +27,26 @@ const DEFAULT_BRUSH_OPTIONS = {
 
 const FEEDBACK_MODES = {
   "sketch-text": {
-    title: "草圖文字分析",
+    title: "草圖文字建議",
     description: "AI 分析你的草圖並提供文字建議",
     borderClass: "border-blue-400",
     bgClass: "bg-blue-50",
     dotBorder: "border-blue-400",
     dotBg: "bg-blue-400",
     textColorClass: "text-blue-700",
+    welcomeMessage:
+      " 嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的草圖並提供文字建議，您可以將這些想法作為靈感來繪製草圖。",
   },
   "sketch-image": {
     title: "草圖圖像建議",
-    description: "AI 分析草圖並生成改進版本圖像",
+    description: "AI 分析你的草圖並生成參考圖像",
     borderClass: "border-purple-400",
     bgClass: "bg-purple-50",
     dotBorder: "border-purple-400",
     dotBg: "bg-purple-400",
     textColorClass: "text-purple-700",
+    welcomeMessage:
+      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的設計並生成一張新的參考圖像，您可以將這些想法作為靈感來繪製草圖。",
   },
   "task-text": {
     title: "任務文字發想",
@@ -52,6 +56,8 @@ const FEEDBACK_MODES = {
     dotBorder: "border-green-400",
     dotBg: "bg-green-400",
     textColorClass: "text-green-700",
+    welcomeMessage:
+      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務提供文字想法給你參考，您可以將這些想法作為靈感來繪製草圖。",
   },
   "task-image": {
     title: "任務圖像發想",
@@ -61,6 +67,8 @@ const FEEDBACK_MODES = {
     dotBorder: "border-orange-400",
     dotBg: "bg-orange-400",
     textColorClass: "text-orange-700",
+    welcomeMessage:
+      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務生成一張參考圖像，您可以將這些想法作為靈感來繪製草圖。",
   },
 };
 
@@ -73,8 +81,8 @@ export default function Home() {
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
-  const savedEraserSizeRef = useRef(20); // 橡皮擦預設尺寸為 20
-
+  const savedEraserSizeRef = useRef(60); // 橡皮擦預設尺寸為 60
+  const inputFocusStyle = "focus-visible:ring-2 focus-visible:ring-ring";
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [uploadedImageFile, setUploadedImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
@@ -82,7 +90,7 @@ export default function Home() {
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
   const canvasRef = useRef();
   const [prompt, setPrompt] = useState(
-    "請您繪製一張能夠在長照中心使用的椅子，您可以從不同設計面向去思考這張椅子的功能、結構、材質等，任何發想形式或呈現手法不侷限，您可以嘗試想像在這樣環境中會有什麼樣使用者，他們會如何使用這樣椅子，請您盡可能繪製越多草圖越好。"
+    "請您繪製一張能夠在長照中心使用的椅子，您可以從不同設計面向去思考這張椅子的功能、結構、形狀、材質等，呈現方式沒有侷限。請您先嘗試想像使用椅子的人和使用椅子的環境，他們會如何使用這張椅子，並在下方輸入您定義好的目標受眾和用戶需求。接下來，AI助手會提供一些建議來協助您發想，AI助手的位置在左下角。您的目標是在20分鐘內透過與AI的協作，盡可能地創作越多草圖越好。"
   );
   const [targetUser, setTargetUser] = useState("");
   const [userNeed, setUserNeed] = useState("");
@@ -94,7 +102,20 @@ export default function Home() {
   const updateCanvasEmptyStatus = useCallback(() => {
     setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
   }, []);
+  useEffect(() => {
+    if (isLoggedIn) {
+      // 如果使用者已登入，為 body 加上 .disable-selection class
+      document.body.classList.add("disable-selection");
+    } else {
+      // 如果使用者未登入（或已登出），則移除該 class
+      document.body.classList.remove("disable-selection");
+    }
 
+    // 這是一個 cleanup 函式，確保在元件卸載時也會移除 class
+    return () => {
+      document.body.classList.remove("disable-selection");
+    };
+  }, [isLoggedIn]); // 這個 effect 的依賴項是 isLoggedIn
   useEffect(() => {
     const canvasInstance = canvasRef.current;
     if (canvasInstance) {
@@ -209,21 +230,17 @@ export default function Home() {
   const handleSaveInputs = () => {
     // 這裡的檢查雖然在 UI 上已經擋掉，但作為最後防線是好的實踐
     if (!targetUser.trim() || !userNeed.trim()) {
-      alert("請確保「設計對象」與「用戶需求」都已填寫。");
+      alert("請確保「目標受眾」與「用戶需求」都已填寫。");
       return;
     }
     setIsSaved(true);
     setIsEditing(false);
   };
-  const handleEditInputs = () => {
-    setIsEditing(true);
-    setIsSaved(false);
-  };
 
   const handleSendToAI = async () => {
     if (!isLoggedIn) return;
     if (!isSaved) {
-      alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
+      alert("請先點擊「儲存」按鈕來鎖定您的目標受眾與需求。");
       return;
     }
     if (canvasRef.current?.isDrawing()) {
@@ -269,6 +286,7 @@ export default function Home() {
         docId: result.docId,
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
+      canvasRef.current?.clearCanvas();
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -284,7 +302,7 @@ export default function Home() {
       return;
     }
     if (!isSaved) {
-      alert("請先點擊「儲存」按鈕來鎖定您的設計對象與需求。");
+      alert("請先點擊「儲存」按鈕來鎖定您的目標受眾與需求。");
       return;
     }
     setIsLoadingAI(true);
@@ -357,7 +375,7 @@ export default function Home() {
             <div className="bg-gray-100 p-3 rounded-md">
               <div className="text-sm space-y-1">
                 <p>
-                  <span className="font-semibold">設計對象：</span>
+                  <span className="font-semibold">目標受眾：</span>
                   {analysis.target_user_chinese}
                 </p>
                 <p>
@@ -394,12 +412,10 @@ export default function Home() {
     return null;
   };
 
-  // ... 剩餘的 JSX 渲染邏輯 ...
-  // (此處省略未變動的 JSX 程式碼以節省篇幅，你只需要更新檔案前半部分的邏輯即可)
   return (
     <div className="relative">
       {!isLoggedIn ? (
-        <div className="fixed inset-0 bg-gray-400 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full mx-4 h-fill">
             <h2 className="text-xl font-bold mb-4 text-center text-gray-800">
               歡迎參與草圖設計實驗
@@ -413,7 +429,7 @@ export default function Home() {
                 value={participantId}
                 onChange={(e) => setParticipantId(e.target.value)}
                 placeholder="例如：P01、P02..."
-                className="w-full py-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-6 border border-gray-300 rounded-md focus-visible:ring-2 focus-visible:ring-ring "
                 autoFocus
               />
             </div>
@@ -477,8 +493,13 @@ export default function Home() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-2 gap-4 p-6">
-        <div className="space-y-4">
+      {/* [佈局修改 1] 將 grid-cols-2 改為 grid-cols-3 來建立 1/3 + 2/3 的佈局基礎 */}
+      <div className="grid grid-cols-3 gap-6 p-6">
+        {/* [佈局修改 2] 建立新的左側欄 (佔 1/3 寬度)，放置所有控制項和 AI 回饋 */}
+        <div className="col-span-1 flex flex-col space-y-4">
+          {/* ----- 以下是左側欄內容 ----- */}
+
+          {/* 受試者資訊 */}
           <div
             className={`p-3 ${currentModeConfig?.bgClass} rounded flex justify-between items-center`}
           >
@@ -497,12 +518,13 @@ export default function Home() {
               新受試者
             </button>
           </div>
+
+          {/* 設計任務和定義情境 Accordion */}
           <Accordion
             type="multiple"
             defaultValue={["task", "context"]}
-            className="w-full space-y-4" // 加上 space-y-4
+            className="w-full space-y-4"
           >
-            {/* 移除了外層的 div，現在 AccordionItem 是直接子元素 */}
             <AccordionItem
               value="task"
               className="border rounded bg-gray-100 px-4"
@@ -513,26 +535,11 @@ export default function Home() {
                   <span>設計任務</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                <p className="text-sm pt-2 px-6">{prompt}</p>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="context"
-              className="border rounded bg-gray-100 px-4"
-            >
-              <AccordionTrigger className="text-lg font-bold">
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">🎯</span>
-                  <span>定義設計情境</span>
-                </div>
-              </AccordionTrigger>
-              {/* 在此處加上 pb-4 (padding-bottom) 來解決 hover 邊框裁切問題 */}
-              <AccordionContent className="space-y-4 pt-2 pb-4 px-6">
+              <AccordionContent className="space-y-6 px-6">
+                <p className="text-sm  leading-[1.6]">{prompt}</p>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    我的設計對象是：
+                    目標受眾：
                   </label>
                   <Input
                     type="text"
@@ -540,19 +547,16 @@ export default function Home() {
                     onChange={(e) =>
                       handleUserInputChange(setTargetUser, e.target.value)
                     }
-                    placeholder="例如：久坐的老年人"
-                    disabled={isSaved && !isEditing}
-                    // 加上 className 來控制背景顏色
-                    className={
-                      isSaved && !isEditing
-                        ? "bg-gray-300 text-gray-700"
-                        : "bg-white"
-                    }
+                    placeholder="您覺得這張椅子是誰來使用？"
+                    disabled={isSaved}
+                    className={`${inputFocusStyle} ${
+                      isSaved ? "bg-muted text-muted-foreground" : "bg-white"
+                    }`}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    我認為他們有什麼樣需求：
+                    用戶需求：
                   </label>
                   <Input
                     type="text"
@@ -560,38 +564,27 @@ export default function Home() {
                     onChange={(e) =>
                       handleUserInputChange(setUserNeed, e.target.value)
                     }
-                    placeholder="例如：需要舒適且透氣的椅面"
-                    disabled={isSaved && !isEditing}
-                    // 加上 className 來控制背景顏色
-                    className={
-                      isSaved && !isEditing
-                        ? "bg-gray-300 text-gray-700"
-                        : "bg-white"
-                    }
+                    placeholder="您覺得這些用戶需要滿足的事情是什麼？"
+                    disabled={isSaved}
+                    className={`${inputFocusStyle} ${
+                      isSaved ? "bg-muted text-muted-foreground" : "bg-white"
+                    }`}
                   />
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
                     onClick={handleSaveInputs}
                     disabled={!isEditing || isSaveButtonDisabled}
-                    className=" disabled:bg-gray-300 disabled:text-gray-700 disabled:cursor-not-allowed"
                   >
                     儲存
                   </Button>
-                  <Button
-                    onClick={handleEditInputs}
-                    disabled={!isSaved || isEditing}
-                    className=" disabled:bg-gray-300 disabled:text-gray-700 disabled:cursor-not-allowed"
-                  >
-                    修改
-                  </Button>
                   {isSaved ? (
                     <span className="text-green-600 text-xs font-medium">
-                      已儲存，可以開始繪圖。
+                      已鎖定，可以開始繪圖。
                     </span>
                   ) : (
                     <span className="text-gray-500 text-xs">
-                      輸入後請儲存，否則無法獲得回饋。
+                      輸入後請儲存以鎖定情境。
                     </span>
                   )}
                 </div>
@@ -599,15 +592,167 @@ export default function Home() {
             </AccordionItem>
           </Accordion>
 
-          <BrushSettingsPanel
+          {/* 筆刷設定 */}
+          {/* <BrushSettingsPanel
             options={brushOptions}
             onChange={(key, value) =>
               setBrushOptions((prev) => ({ ...prev, [key]: value }))
             }
             isEraser={brushOptions.isEraser}
-          />
+          /> */}
 
-          <div className="relative">
+          {/* [內容移動] 將 AI 回饋面板從右側移入此處 */}
+          <div className="border p-4 rounded bg-gray-100 h-full flex flex-col min-h-[500px]">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
+              {feedbackHistory.length > 0 && (
+                <span className="text-xs text-gray-500">
+                  回應次數：{feedbackHistory.length}
+                </span>
+              )}
+            </div>
+            <div className="overflow-y-auto space-y-4 flex-grow">
+              {/* 載入動畫的邏輯不變 */}
+              {isLoadingAI && <AILoadingIndicator config={currentModeConfig} />}
+
+              {/* [修改] 核心邏輯變更 */}
+              {feedbackHistory.length > 0
+                ? // 如果有歷史紀錄，則只渲染最新的一筆 (陣列中的第一筆)
+                  (() => {
+                    const record = feedbackHistory[0]; // <-- 只取出最新的紀錄
+                    const feedbackConfig = FEEDBACK_MODES[record.feedbackMode];
+                    return (
+                      <div
+                        key={record.docId}
+                        className="flex items-start gap-3"
+                      >
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                              feedbackConfig?.dotBg || "bg-gray-400"
+                            } text-white`}
+                          >
+                            AI
+                          </div>
+                        </div>
+                        <div
+                          className={`flex-grow p-4 bg-white rounded-md shadow-sm border-l-4 ${feedbackConfig?.borderClass}`}
+                        >
+                          <div className="flex justify-between items-start mb-3">
+                            <h3
+                              className={`text-sm font-medium ${feedbackConfig?.textColorClass}`}
+                            >
+                              {/* 標題依然可以顯示當前的總次數 */}
+                              回饋 {feedbackHistory.length}
+                            </h3>
+                            <span className="text-xs text-gray-500">
+                              {record.timestamp.toLocaleTimeString("zh-TW", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                          {(record.feedbackMode === "sketch-text" ||
+                            record.feedbackMode === "sketch-image") &&
+                            record.imageUrl && (
+                              <div className="mb-3">
+                                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                                  你當前的設計：
+                                </h4>
+                                <Image
+                                  src={record.imageUrl}
+                                  alt="受試者草圖"
+                                  width={200}
+                                  height={200}
+                                  className="w-full max-w-48 max-h-48 object-contain border rounded cursor-pointer hover:opacity-80 transition-opacity mx-auto block"
+                                  onClick={() =>
+                                    window.open(record.imageUrl, "_blank")
+                                  }
+                                  title="點擊查看大圖"
+                                />
+                              </div>
+                            )}
+                          <div className="mb-3">
+                            <h5 className="text-sm font-medium mb-2 text-gray-700">
+                              設計建議：
+                            </h5>
+                            {record.feedback.type === "image" &&
+                              record.feedback.suggestions && (
+                                <div className="mt-2 mb-4">
+                                  <Image
+                                    src={record.feedback.suggestions}
+                                    alt="AI 回饋圖像"
+                                    width={512}
+                                    height={512}
+                                    className="rounded-lg shadow-md w-full h-auto cursor-pointer"
+                                    onClick={() =>
+                                      window.open(
+                                        record.feedback.suggestions,
+                                        "_blank"
+                                      )
+                                    }
+                                    title="點擊查看大圖"
+                                  />
+                                </div>
+                              )}
+                            {(record.feedbackMode === "sketch-text" ||
+                              record.feedbackMode === "task-text") &&
+                              record.feedback.analysis &&
+                              renderFeedbackDetails(
+                                record.feedback.analysis,
+                                record.feedbackMode
+                              )}
+                            <h5 className="text-xs mt-4 text-red-500">
+                              以上建議僅供參考
+                            </h5>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })() // 使用 IIFE (立即調用函式表達式) 來在 JSX 中執行這段邏輯
+                : // 如果沒有歷史紀錄，且不在載入中，才顯示初始的歡迎訊息
+                  !isLoadingAI && (
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                            currentModeConfig?.dotBg || "bg-gray-400"
+                          } text-white`}
+                        >
+                          AI
+                        </div>
+                      </div>
+                      <div
+                        className={`flex flex-col flex-grow p-4 bg-white rounded-md shadow-sm border-l-4 ${currentModeConfig?.borderClass} space-y-6`}
+                      >
+                        <h4 className="text-sm leading-[1.6]">
+                          {currentModeConfig?.welcomeMessage}
+                        </h4>
+
+                        <Image
+                          src="/initial-design-example.png"
+                          alt="初始設計範例照片"
+                          width={500}
+                          height={300}
+                          className="w-full h-auto"
+                        />
+                        <h4 className="text-xs leading-[1.6] text-red-500">
+                          注意：每次繪製完成一張草圖後，在按「獲得回饋」按鈕。
+                        </h4>
+                      </div>
+                    </div>
+                  )}
+            </div>
+          </div>
+        </div>
+
+        {/* [佈局修改 3] 建立新的右側欄 (佔 2/3 寬度)，專門放置畫布 */}
+        <div className="col-span-2 flex flex-col space-y-4 ">
+          {/* ----- 以下是右側欄內容 ----- */}
+
+          {/* [內容移動] 將畫布和其控制按鈕移入此處 */}
+          <div className="relative flex-grow h-full">
             <CanvasArea
               ref={canvasRef}
               brushOptions={brushOptions}
@@ -635,6 +780,7 @@ export default function Home() {
               </div>
             )}
           </div>
+
           <input
             type="file"
             ref={fileInputRef}
@@ -665,10 +811,10 @@ export default function Home() {
                     : handleSendToAI
                 }
                 disabled={isSendButtonDisabled}
+                // 移除條件判斷，只定義啟用時的樣式
+                // disabled 屬性會自動觸發 shadcn 的禁用樣式 (如: disabled:opacity-50)
                 className={`p-3 rounded-md font-medium border transition-colors ${
-                  isSendButtonDisabled
-                    ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-                    : currentModeConfig
+                  currentModeConfig
                     ? `${currentModeConfig.bgClass} ${
                         currentModeConfig.borderClass
                       } ${
@@ -677,140 +823,12 @@ export default function Home() {
                         "-50",
                         "-100"
                       )}`
-                    : "bg-gray-300 text-gray-700"
+                    : // 提供一個預設樣式以防 currentModeConfig 不存在
+                      "bg-gray-300 text-gray-700"
                 }`}
               >
-                {isLoadingAI ? "AI 分析中..." : "獲取 AI 回饋"}
+                {isLoadingAI ? "AI 分析中..." : "獲取回饋"}
               </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="border p-4 rounded bg-gray-100 h-full">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
-            {feedbackHistory.length > 0 && (
-              <span className="text-xs text-gray-500">
-                回應次數：{feedbackHistory.length}
-              </span>
-            )}
-          </div>
-          <div className="overflow-y-auto space-y-4 h-screen pb-20">
-            {isLoadingAI && <AILoadingIndicator config={currentModeConfig} />}
-
-            {feedbackHistory.length > 0
-              ? feedbackHistory.map((record, recordIdx) => {
-                  const feedbackConfig = FEEDBACK_MODES[record.feedbackMode];
-                  return (
-                    <div key={record.docId} className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                            feedbackConfig?.dotBg || "bg-gray-400"
-                          } text-white`}
-                        >
-                          AI
-                        </div>
-                      </div>
-                      <div
-                        className={`flex-grow p-4 bg-white rounded-md shadow-sm border-l-4 ${feedbackConfig?.borderClass}`}
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <h3
-                            className={`text-sm font-medium ${feedbackConfig?.textColorClass}`}
-                          >
-                            回饋 {feedbackHistory.length - recordIdx}
-                          </h3>
-                          <span className="text-xs text-gray-500">
-                            {record.timestamp.toLocaleTimeString("zh-TW", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              second: "2-digit",
-                            })}
-                          </span>
-                        </div>
-                        {(record.feedbackMode === "sketch-text" ||
-                          record.feedbackMode === "sketch-image") &&
-                          record.imageUrl && (
-                            <div className="mb-3">
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">
-                                你當前的設計：
-                              </h4>
-                              <Image
-                                src={record.imageUrl}
-                                alt="受試者草圖"
-                                width={200}
-                                height={200}
-                                className="w-full max-w-48 max-h-48 object-contain border rounded cursor-pointer hover:opacity-80 transition-opacity mx-auto block"
-                                onClick={() =>
-                                  window.open(record.imageUrl, "_blank")
-                                }
-                                title="點擊查看大圖"
-                              />
-                            </div>
-                          )}
-                        <div className="mb-3">
-                          <h5 className="text-sm font-medium mb-2 text-gray-700">
-                            設計建議：
-                          </h5>
-                          {record.feedback.type === "image" &&
-                            record.feedback.suggestions && (
-                              <div className="mt-2 mb-4">
-                                <Image
-                                  src={record.feedback.suggestions}
-                                  alt="AI 回饋圖像"
-                                  width={512}
-                                  height={512}
-                                  className="rounded-lg shadow-md w-full h-auto cursor-pointer"
-                                  onClick={() =>
-                                    window.open(
-                                      record.feedback.suggestions,
-                                      "_blank"
-                                    )
-                                  }
-                                  title="點擊查看大圖"
-                                />
-                              </div>
-                            )}
-                          {(record.feedbackMode === "sketch-text" ||
-                            record.feedbackMode === "task-text") &&
-                            record.feedback.analysis &&
-                            renderFeedbackDetails(
-                              record.feedback.analysis,
-                              record.feedbackMode
-                            )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              : null}
-
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                    currentModeConfig?.dotBg || "bg-gray-400"
-                  } text-white`}
-                >
-                  AI
-                </div>
-              </div>
-              <div
-                className={`flex flex-col flex-grow p-4 bg-white rounded-md shadow-sm border-l-4 ${currentModeConfig?.borderClass}`}
-              >
-                <h4 className="text-sm text-gray-700 mb-2">
-                  嗨！
-                  我是你的草圖協作夥伴，以下是一張設計範例照片，你可以根據這張範例進行你的第一版草圖設計，完成之後記得點擊「獲取
-                  AI 回饋」按鈕，這樣我就能提供你新的回饋。
-                </h4>
-                <Image
-                  src="/initial-design-example.png"
-                  alt="初始設計範例照片"
-                  width={500}
-                  height={300}
-                />
-              </div>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ export default function BrushSettingsPanel({
               <Label className="mb-2 block">大小 (Size)</Label>
               <Slider
                 min={1}
-                max={50}
+                max={100}
                 step={1}
                 value={[options.size ?? 8]}
                 onValueChange={([v]) => onChange("size", v)}
