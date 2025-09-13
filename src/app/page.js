@@ -193,6 +193,7 @@ export default function Home() {
   const handleStartNewExperiment = () => {
     const confirmed = confirm("確定要開始新的實驗嗎？目前的進度將會清除。");
     if (!confirmed) return;
+    canvasRef.current?.clearCanvas();
     setParticipantId("");
     setSelectedMode("");
     setIsLoggedIn(false);
