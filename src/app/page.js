@@ -36,6 +36,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-blue-700",
     welcomeMessage:
       " 嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的草圖並提供文字建議，您可以將這些想法作為靈感來繪製草圖。",
+    warningMessage: "以上建議僅供參考",
   },
   "sketch-image": {
     title: "草圖圖像建議",
@@ -47,6 +48,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-purple-700",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的設計並生成一張新的參考圖像，您可以將這些想法作為靈感來繪製草圖。",
+    warningMessage: "以上建議僅供參考，請勿直接照抄描圖",
   },
   "task-text": {
     title: "任務文字發想",
@@ -58,6 +60,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-[#005D4B]",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務提供文字想法給你參考，您可以將這些想法作為靈感來繪製草圖。",
+    warningMessage: "以上建議僅供參考",
   },
   "task-image": {
     title: "任務圖像發想",
@@ -69,6 +72,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-orange-700",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務生成一張參考圖像，您可以將這些想法作為靈感來繪製草圖。",
+    warningMessage: "以上建議僅供參考，請勿直接照抄描圖",
   },
 };
 
@@ -78,6 +82,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [brushOptions, setBrushOptions] = useState(DEFAULT_BRUSH_OPTIONS);
+  const [sketchCount, setSketchCount] = useState(1);
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
@@ -183,6 +188,7 @@ export default function Home() {
       setIsLoggedIn(true);
       setBrushOptions({ ...DEFAULT_BRUSH_OPTIONS });
       setFeedbackHistory([]);
+      setSketchCount(1);
       if (canvasRef.current?.clearCanvas) {
         canvasRef.current.clearCanvas();
       }
@@ -205,6 +211,7 @@ export default function Home() {
     setTargetUser("");
     setUserNeed("");
     setIsCanvasEmpty(true);
+    setSketchCount(1);
   };
   const handleUploadButtonClick = () => {
     if (isLoadingAI) return;
@@ -273,6 +280,7 @@ export default function Home() {
       const result = await uploadSketchAndFeedback(
         blob,
         participantId.trim(),
+        sketchCount,
         prompt,
         feedback,
         selectedMode
@@ -287,6 +295,7 @@ export default function Home() {
         docId: result.docId,
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
+      setSketchCount((prev) => prev + 1);
       canvasRef.current?.clearCanvas();
     } catch (error) {
       console.error("處理失敗：", error);
@@ -326,6 +335,7 @@ export default function Home() {
       const result = await uploadSketchAndFeedback(
         uploadedImageFile,
         participantId.trim(),
+        sketchCount,
         prompt,
         feedback,
         selectedMode
@@ -340,6 +350,7 @@ export default function Home() {
         docId: result.docId,
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
+      setSketchCount((prev) => prev + 1);
       handleClearUploadedImage();
     } catch (error) {
       console.error("處理失敗：", error);
@@ -359,54 +370,96 @@ export default function Home() {
       );
     }
 
-    const isTaskMode = mode.includes("task");
-    const isSketchMode = mode.includes("sketch");
-    const hasUserNeed =
-      analysis.target_user_chinese && analysis.key_user_need_chinese;
-    const hasModifications =
-      analysis.modification_function_chinese ||
-      analysis.modification_structure_chinese ||
-      analysis.modification_material_chinese;
-
-    // Only render for text-based modes
+    // [核心修改] 簡化渲染邏輯
     if (mode === "sketch-text" || mode === "task-text") {
-      return (
-        <div className="space-y-4">
-          {isTaskMode && hasUserNeed && (
-            <div className="bg-gray-100 p-3 rounded-md">
-              <div className="text-sm space-y-1">
-                <p>
-                  <span className="font-semibold">目標受眾：</span>
-                  {analysis.target_user_chinese}
-                </p>
-                <p>
-                  <span className="font-semibold">用戶需求：</span>
-                  {analysis.key_user_need_chinese}
-                </p>
-              </div>
-            </div>
-          )}
+      // For both modes, prioritize the single narrative feedback.
+      if (analysis.narrative_feedback_chinese) {
+        return (
+          <div className="bg-gray-100 p-3 rounded-md">
+            <p className="text-sm leading-relaxed">
+              {analysis.narrative_feedback_chinese}
+            </p>
+          </div>
+        );
+      }
 
-          {hasModifications && (
+      // Fallback to a structured list if narrative generation fails.
+      if (mode === "task-text") {
+        const hasTaskTextFeedback =
+          analysis.defined_target_user_chinese ||
+          analysis.defined_user_need_chinese ||
+          analysis.concept_structure_chinese;
+        if (hasTaskTextFeedback) {
+          return (
             <div className="bg-gray-100 p-3 rounded-md">
-              <div className="text-sm space-y-1">
-                <p>
-                  <span className="font-semibold">功能：</span>
-                  {analysis.modification_function_chinese}
-                </p>
-                <p>
-                  <span className="font-semibold">結構：</span>
-                  {analysis.modification_structure_chinese}
-                </p>
-                <p>
-                  <span className="font-semibold">材質：</span>
-                  {analysis.modification_material_chinese}
-                </p>
+              <div className="text-sm space-y-2">
+                {analysis.defined_target_user_chinese && (
+                  <p>
+                    <span className="font-semibold">目標用戶：</span>
+                    {analysis.defined_target_user_chinese}
+                  </p>
+                )}
+                {analysis.defined_user_need_chinese && (
+                  <p>
+                    <span className="font-semibold">用戶需求：</span>
+                    {analysis.defined_user_need_chinese}
+                  </p>
+                )}
+                {analysis.concept_structure_chinese && (
+                  <p className="pt-2 border-t border-gray-200 mt-2">
+                    <span className="font-semibold">結構概念：</span>
+                    {analysis.concept_structure_chinese}
+                  </p>
+                )}
+                {analysis.concept_form_chinese && (
+                  <p>
+                    <span className="font-semibold">形式概念：</span>
+                    {analysis.concept_form_chinese}
+                  </p>
+                )}
+                {analysis.concept_materiality_chinese && (
+                  <p>
+                    <span className="font-semibold">材質概念：</span>
+                    {analysis.concept_materiality_chinese}
+                  </p>
+                )}
               </div>
             </div>
-          )}
-        </div>
-      );
+          );
+        }
+      } else {
+        // Fallback for sketch-text
+        const hasConcepts =
+          analysis.concept_structure_chinese ||
+          analysis.concept_form_chinese ||
+          analysis.concept_materiality_chinese;
+        if (hasConcepts) {
+          return (
+            <div className="bg-gray-100 p-3 rounded-md">
+              <div className="text-sm space-y-1">
+                {analysis.concept_structure_chinese && (
+                  <p>
+                    <span className="font-semibold">結構概念：</span>
+                    {analysis.concept_structure_chinese}
+                  </p>
+                )}
+                {analysis.concept_form_chinese && (
+                  <p>
+                    <span className="font-semibold">形式概念：</span>
+                    {analysis.concept_form_chinese}
+                  </p>
+                )}
+                {analysis.concept_materiality_chinese && (
+                  <p>
+                    <span className="font-semibold">材質概念：</span>
+                    {analysis.concept_materiality_chinese}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        }
+      }
     }
 
     // For sketch-image and task-image, return null to render nothing
@@ -607,7 +660,7 @@ export default function Home() {
 
           {/* [內容移動] 將 AI 回饋面板從右側移入此處 */}
           <div
-            className={`border px-6 py-4 rounded ${currentModeConfig?.bgClass} h-full flex flex-col min-h-[500px]`}
+            className={`border px-6 py-4 rounded ${currentModeConfig?.bgClass} h-full flex flex-col min-h-[580px]`}
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
@@ -710,7 +763,7 @@ export default function Home() {
                                 record.feedbackMode
                               )}
                             <h5 className="text-xs mt-4 text-red-500">
-                              以上建議僅供參考
+                              {currentModeConfig?.warningMessage}
                             </h5>
                           </div>
                         </div>
