@@ -241,8 +241,11 @@ export default function Home() {
       alert("請確保「目標受眾」與「用戶需求」都已填寫。");
       return;
     }
-    setIsSaved(true);
-    setIsEditing(false);
+    const confirmed = window.confirm("一旦儲存就無法修改，請確認輸入內容無誤");
+    if (confirmed) {
+      setIsSaved(true);
+      setIsEditing(false);
+    }
   };
 
   const handleSendToAI = async () => {

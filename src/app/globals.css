@@ -62,12 +62,11 @@
   }
 
   /* [唯一的修改] 
-     在禁用選取模式下，只為 input, textarea, label 恢復選取功能。
+     在禁用選取模式下，只為 input, textarea 恢復選取功能。
      "button" 已從此規則中移除。
   */
   .disable-selection input,
-  .disable-selection textarea,
-  .disable-selection label {
+  .disable-selection textarea {
     -webkit-user-select: auto;
     user-select: auto;
   }
