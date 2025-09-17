@@ -186,6 +186,10 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     },
     isDrawing: () => isDrawing,
     isEmpty: () => drawingHistory.length === 0 && points.length === 0,
+    getDrawingData: () => ({
+      history: drawingHistory,
+      canvas: mainCanvasRef.current,
+    }),
   }));
 
   const getCanvasCoords = (e, canvas) => {

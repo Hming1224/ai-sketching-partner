@@ -61,10 +61,12 @@
     user-select: none;
   }
 
-  /* [修改] 讓這些元素在禁用選取模式下依然可以被選取或點擊 */
+  /* [唯一的修改] 
+     在禁用選取模式下，只為 input, textarea, label 恢復選取功能。
+     "button" 已從此規則中移除。
+  */
   .disable-selection input,
   .disable-selection textarea,
-  .disable-selection button,
   .disable-selection label {
     -webkit-user-select: auto;
     user-select: auto;

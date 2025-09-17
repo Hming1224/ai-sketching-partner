@@ -255,26 +255,95 @@ export default function Home() {
       alert("請先完成繪圖再送出。");
       return;
     }
-    const blob = await canvasRef.current?.getCanvasImageBlob();
-    if (!blob) {
+
+    const drawingData = canvasRef.current?.getDrawingData();
+    if (!drawingData || !drawingData.history || drawingData.history.length === 0) {
       alert("請先在畫布上繪圖。");
       return;
     }
+
     setIsLoadingAI(true);
-    const formData = new FormData();
-    formData.append("taskDescription", prompt);
-    formData.append("image", blob, "sketch.png");
-    formData.append("feedbackType", selectedMode);
-    formData.append("targetUser", targetUser);
-    formData.append("userNeed", userNeed);
+
     try {
+      const blob = await new Promise((resolve) => {
+        const { history, canvas } = drawingData;
+
+        if (!canvas) {
+          resolve(null);
+          return;
+        }
+
+        let minX = Infinity,
+          minY = Infinity,
+          maxX = -Infinity,
+          maxY = -Infinity;
+
+        history.forEach((stroke) => {
+          stroke.points.forEach((point) => {
+            minX = Math.min(minX, point.x);
+            minY = Math.min(minY, point.y);
+            maxX = Math.max(maxX, point.x);
+            maxY = Math.max(maxY, point.y);
+          });
+        });
+
+        if (minX === Infinity) {
+          // No points drawn, get full canvas
+          canvas.toBlob(resolve, "image/png");
+          return;
+        }
+
+        const padding = 40;
+        const cropX = Math.max(0, minX - padding);
+        const cropY = Math.max(0, minY - padding);
+        const cropWidth = Math.min(canvas.width, maxX + padding) - cropX;
+        const cropHeight = Math.min(canvas.height, maxY + padding) - cropY;
+
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = cropWidth;
+        tempCanvas.height = cropHeight;
+        const tempCtx = tempCanvas.getContext("2d");
+
+        // Fill background with white
+        tempCtx.fillStyle = "white";
+        tempCtx.fillRect(0, 0, cropWidth, cropHeight);
+
+        tempCtx.drawImage(
+          canvas,
+          cropX,
+          cropY,
+          cropWidth,
+          cropHeight,
+          0,
+          0,
+          cropWidth,
+          cropHeight
+        );
+
+        tempCanvas.toBlob(resolve, "image/png");
+      });
+
+      if (!blob) {
+        alert("無法擷取畫布，請重試。");
+        throw new Error("Failed to get canvas blob.");
+      }
+
+      const formData = new FormData();
+      formData.append("taskDescription", prompt);
+      formData.append("image", blob, "sketch.png");
+      formData.append("feedbackType", selectedMode);
+      formData.append("targetUser", targetUser);
+      formData.append("userNeed", userNeed);
+
       const res = await fetch("/api/feedback", {
         method: "POST",
         body: formData,
       });
+
       if (!res.ok) {
         throw new Error(await res.text());
       }
+
       const data = await res.json();
       const feedback = data.feedback;
       const result = await uploadSketchAndFeedback(
@@ -285,6 +354,7 @@ export default function Home() {
         feedback,
         selectedMode
       );
+
       const newFeedbackRecord = {
         id: result.docId,
         timestamp: new Date(),
@@ -294,6 +364,7 @@ export default function Home() {
         imageUrl: result.userSketchUrl,
         docId: result.docId,
       };
+
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
       canvasRef.current?.clearCanvas();
