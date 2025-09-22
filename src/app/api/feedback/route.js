@@ -25,8 +25,8 @@ export async function POST(req) {
           
           **Context:**
           ${taskDescription}
-          ${targetUser ? `**Target User:** ${targetUser}` : ''}
-          ${userNeed ? `**Key User Need:** ${userNeed}` : ''}
+          ${targetUser ? `**Target User:** ${targetUser}` : ""}
+          ${userNeed ? `**Key User Need:** ${userNeed}` : ""}
 
           Analyze the user's sketch and design context above, your task is to provide ONE abstract concept, described from THREE aspects, in **Traditional Chinese**.
           
@@ -58,7 +58,6 @@ export async function POST(req) {
             "concept_form_chinese": "A description of the abstract geometric forms, tailored to the defined user in Traditional Chinese.",
             "concept_materiality_chinese": "A sensory description of the materials, tailored to the defined user in Traditional Chinese."
           }`;
-
 
     const getAiIdeation = async (prompt, isSketchMode, imagePart) => {
       let responseText;
@@ -126,8 +125,15 @@ export async function POST(req) {
             The overall volumetric shape is composed of: "${aiIdea.concept_form_chinese}".
             The surface and material properties should convey: "${aiIdea.concept_materiality_chinese}".
 
-            Style: **loose, gestural sketch with multiple overlapping and rough, expressive lines.** Show clear evidence of **thinking on paper**, with dynamic and imperfect forms. Include **light, quick marker rendering** to suggest volume and shadow, but maintain a raw, unrefined aesthetic.
-            AVOID clean CAD renders, precise line art, or finished presentation drawings. The image must look like a designer's initial, hurried ideation sketch.
+            **Style:** The sketch must look like a rapid, early-stage brainstorming drawing.
+            - Use **sketchy, unrefined, and multiple overlapping lines** to build up the form. A single curve should be visibly composed of several searching strokes, showing the process of finding the right line.
+            - Include **rough, gestural cross-hatching and quick, minimal marker shading** to hint at volume and material texture, not to create a realistic rendering.
+            - The overall aesthetic should be dynamic, raw, and energetic.
+
+            **Strict Rules:**
+            - The image must **ONLY contain the chair sketch** on a plain, neutral (light gray or white) background.
+            - **DO NOT add any text, annotations, arrows, measurements, notes, or any other objects** to the image.
+            - AVOID clean, single-stroke "vector" lines, perfect geometric shapes, and a polished, finished look.
           `;
         } else {
           // task-image 模式維持原樣
@@ -137,8 +143,15 @@ export async function POST(req) {
             It should explore the idea of "${aiIdea.concept_form_chinese}".
             The materials should evoke a sense of "${aiIdea.concept_materiality_chinese}".
 
-            Style: **loose, gestural sketch with multiple overlapping and rough, expressive lines.** Show clear evidence of **thinking on paper**, with dynamic and imperfect forms. Include **light, quick marker rendering** to suggest volume and shadow, but maintain a raw, unrefined aesthetic.
-            AVOID clean CAD renders, precise line art, or finished presentation drawings. The image must look like a designer's initial, hurried ideation sketch.
+            **Style:** The sketch must look like a rapid, early-stage brainstorming drawing.
+            - Use **sketchy, unrefined, and multiple overlapping lines** to build up the form. A single curve should be visibly composed of several searching strokes, showing the process of finding the right line.
+            - Include **rough, gestural cross-hatching and quick, minimal marker shading** to hint at volume and material texture, not to create a realistic rendering.
+            - The overall aesthetic should be dynamic, raw, and energetic.
+
+            **Strict Rules:**
+            - The image must **ONLY contain the chair sketch** on a plain, neutral (light gray or white) background.
+            - **DO NOT add any text, annotations, arrows, measurements, notes, or any other objects** to the image.
+            - AVOID clean, single-stroke "vector" lines, perfect geometric shapes, and a polished, finished look.
           `;
         }
 
