@@ -10,6 +10,7 @@ import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
 import ClientOnly from "@/components/ClientOnly";
 import { X } from "lucide-react";
+import HistoryModal from "@/components/HistoryModal"; // 匯入新的 Modal 元件
 import {
   Accordion,
   AccordionContent,
@@ -112,7 +113,28 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
   const [initialFeedbackState, setInitialFeedbackState] = useState("hidden"); // "hidden", "loading", "visible"
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [historyPageIndex, setHistoryPageIndex] = useState(0);
   const isSaveButtonDisabled = !targetUser.trim() || !userNeed.trim();
+
+  const handleOpenHistoryModal = () => {
+    if (feedbackHistory.length > 0) {
+      setHistoryPageIndex(0);
+      setIsHistoryModalOpen(true);
+    }
+  };
+
+  const handleCloseHistoryModal = () => {
+    setIsHistoryModalOpen(false);
+  };
+
+  const handleHistoryNext = () => {
+    setHistoryPageIndex((prev) => Math.min(prev + 1, feedbackHistory.length - 1));
+  };
+
+  const handleHistoryPrev = () => {
+    setHistoryPageIndex((prev) => Math.max(prev - 1, 0));
+  };
 
   const updateCanvasEmptyStatus = useCallback(() => {
     setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
@@ -758,11 +780,19 @@ export default function Home() {
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
-            {feedbackHistory.length > 0 && (
+            <div className="flex items-center space-x-2">
+              {feedbackHistory.length > 0 && (
+                <button
+                  onClick={handleOpenHistoryModal}
+                  className="text-xs bg-white hover:bg-gray-50 text-gray-600 px-3 py-1 rounded border transition-colors"
+                >
+                  創作歷程
+                </button>
+              )}
               <span className="text-xs text-gray-500">
                 回應次數：{feedbackHistory.length}
               </span>
-            )}
+            </div>
           </div>
           <div className="overflow-y-auto space-y-4 flex-grow">
             {(isLoadingAI || initialFeedbackState === "loading") && (
@@ -972,6 +1002,15 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <HistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={handleCloseHistoryModal}
+        history={feedbackHistory}
+        currentPage={historyPageIndex}
+        onNext={handleHistoryNext}
+        onPrev={handleHistoryPrev}
+        renderFeedbackDetails={renderFeedbackDetails}
+      />
     </div>
   );
 }
