@@ -584,7 +584,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex flex-col h-screen p-6 gap-6">
+    <div className="relative flex flex-col h-dvh p-6 gap-6 overflow-hidden">
       {!isLoggedIn ? (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full mx-4 h-fill">
