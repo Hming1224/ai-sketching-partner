@@ -773,10 +773,10 @@ export default function Home() {
       </Accordion>
 
       {/* Bottom Section */}
-      <div className="flex-grow grid grid-cols-3 gap-6">
+      <div className="flex-grow grid grid-cols-3 gap-6 min-h-0">
         {/* Bottom-Left: AI Feedback */}
         <div
-          className={`col-span-1 border px-6 py-4 rounded ${currentModeConfig?.bgClass} flex flex-col`}
+          className={`col-span-1 border px-6 py-4 rounded ${currentModeConfig?.bgClass} flex flex-col min-h-0`}
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
