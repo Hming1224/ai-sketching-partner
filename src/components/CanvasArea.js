@@ -9,6 +9,8 @@ import React, {
 import getStroke from "perfect-freehand";
 import getSvgPathFromStroke from "@/lib/getSvgPathFromStroke";
 
+const MIN_PRESSURE = 0.015;
+
 const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const mainCanvasRef = useRef(null);
   const drawingCanvasRef = useRef(null);
@@ -18,7 +20,6 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
 
   const [history, setHistory] = useState([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
-  const [debugInfo, setDebugInfo] = useState(null);
 
   const handleCanvasChange = useCallback(() => {
     if (onChange) {
@@ -72,8 +73,14 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     if (e.button !== 0) return;
     isDrawingRef.current = true;
     const { x, y } = getCanvasPosition(e);
+
+    let compensatedPressure = e.pressure;
+    if (e.pressure > 0 && e.pressure < MIN_PRESSURE) {
+      compensatedPressure = MIN_PRESSURE;
+    }
+
     const newStroke = {
-      points: [{ x, y, pressure: e.pressure }],
+      points: [{ x, y, pressure: compensatedPressure }],
       ...brushOptions,
     };
     setActiveStroke(newStroke);
@@ -82,15 +89,18 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const handlePointerMove = (e) => {
     if (!isDrawingRef.current) return;
     e.preventDefault();
-    const { pressure, tiltX, tiltY } = e;
-    setDebugInfo({ pressure: pressure.toFixed(4), tiltX, tiltY });
+
+    let compensatedPressure = e.pressure;
+    if (e.pressure > 0 && e.pressure < MIN_PRESSURE) {
+      compensatedPressure = MIN_PRESSURE;
+    }
 
     const { x, y } = getCanvasPosition(e);
     setActiveStroke((prev) => {
       if (!prev) return null;
       return {
         ...prev,
-        points: [...prev.points, { x, y, pressure: e.pressure }],
+        points: [...prev.points, { x, y, pressure: compensatedPressure }],
       };
     });
   };
@@ -100,16 +110,13 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     isDrawingRef.current = false;
 
     if (activeStroke && activeStroke.points.length > 1) {
-      setStrokes((prevStrokes) => {
-        const newStrokes = [...prevStrokes, activeStroke];
-        const newHistory = [...history.slice(0, historyIndex + 1), newStrokes];
-        setHistory(newHistory);
-        setHistoryIndex(newHistory.length - 1);
-        return newStrokes;
-      });
+      const newStrokes = [...strokes, activeStroke];
+      setStrokes(newStrokes);
+      const newHistory = [...history.slice(0, historyIndex + 1), newStrokes];
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
     }
     setActiveStroke(null);
-    setDebugInfo(null);
     handleCanvasChange();
   };
 
@@ -180,7 +187,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
       mainCanvas.height = height;
       drawingCanvas.width = width;
       drawingCanvas.height = height;
-      setStrokes(strokes => [...strokes]);
+      setStrokes(s => [...s]);
     };
 
     window.addEventListener("resize", resizeCanvases);
@@ -197,32 +204,13 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
       window.removeEventListener("resize", resizeCanvases);
       drawingCanvas.removeEventListener("pointerleave", handlePointerLeave);
     };
-  }, [strokes]);
+  }, []);
 
   return (
     <div
-      className="relative w-full h-full touch-none bg-white rounded-lg overflow-hidden"
+      className="relative w-full h-full touch-none bg-white rounded-lg overflow-hidden border border-gray-300"
       style={{ width: "100%", height: "100%" }}
     >
-      {debugInfo && (
-        <div style={{
-          position: 'absolute',
-          top: 10,
-          left: 10,
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          padding: '8px',
-          borderRadius: '5px',
-          zIndex: 100,
-          fontSize: '12px',
-          fontFamily: 'monospace',
-          pointerEvents: 'none',
-        }}>
-          <p>Pressure: {debugInfo.pressure}</p>
-          <p>TiltX: {debugInfo.tiltX}</p>
-          <p>TiltY: {debugInfo.tiltY}</p>
-        </div>
-      )}
       <canvas
         ref={mainCanvasRef}
         className="absolute top-0 left-0"

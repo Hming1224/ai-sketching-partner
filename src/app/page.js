@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/accordion";
 
 const DEFAULT_BRUSH_OPTIONS = {
-  size: 8,
+  size: 4,
   thinning: 0.5,
   streamline: 0.8,
   smoothing: 0.6,
@@ -688,7 +688,7 @@ export default function Home() {
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center space-x-6">
                   <span>設計任務</span>
-                  {isSaved && !openAccordionItems.includes('task') && (
+                  {isSaved && !openAccordionItems.includes("task") && (
                     <div className="flex items-center gap-6 text-sm font-normal">
                       <div className="flex items-baseline gap-2">
                         <p className="font-medium text-gray-700 whitespace-nowrap">
@@ -818,7 +818,10 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <div ref={feedbackContainerRef} className="overflow-y-auto space-y-4 flex-grow">
+          <div
+            ref={feedbackContainerRef}
+            className="overflow-y-auto space-y-4 flex-grow"
+          >
             {(isLoadingAI || initialFeedbackState === "loading") && (
               <AILoadingIndicator config={currentModeConfig} />
             )}
