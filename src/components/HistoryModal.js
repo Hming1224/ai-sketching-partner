@@ -71,7 +71,7 @@ const HistoryModal = ({
                   alt={leftTitle}
                   fill
                   style={{ objectFit: "contain" }}
-                  className="rounded-md"
+                  className="rounded-md pointer-events-none"
                 />
               ) : leftContent ? (
                 renderFeedbackDetails(leftContent, feedbackMode)
@@ -93,7 +93,7 @@ const HistoryModal = ({
                   alt={rightTitle}
                   fill
                   style={{ objectFit: "contain" }}
-                  className="rounded-md"
+                  className="rounded-md pointer-events-none"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500">

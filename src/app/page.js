@@ -116,6 +116,7 @@ export default function Home() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyPageIndex, setHistoryPageIndex] = useState(0);
   const isSaveButtonDisabled = !targetUser.trim() || !userNeed.trim();
+  const feedbackContainerRef = useRef(null);
 
   const handleOpenHistoryModal = () => {
     if (feedbackHistory.length > 0) {
@@ -129,7 +130,9 @@ export default function Home() {
   };
 
   const handleHistoryNext = () => {
-    setHistoryPageIndex((prev) => Math.min(prev + 1, feedbackHistory.length - 1));
+    setHistoryPageIndex((prev) =>
+      Math.min(prev + 1, feedbackHistory.length - 1)
+    );
   };
 
   const handleHistoryPrev = () => {
@@ -288,6 +291,9 @@ export default function Home() {
   };
 
   const handleSendToAI = async () => {
+    if (feedbackContainerRef.current) {
+      feedbackContainerRef.current.scrollTop = 0;
+    }
     if (!isLoggedIn) return;
     if (!isSaved) {
       alert("請先點擊「儲存」按鈕來鎖定您的目標受眾與需求。");
@@ -423,6 +429,9 @@ export default function Home() {
   };
 
   const handleSendUploadedImageToAI = async () => {
+    if (feedbackContainerRef.current) {
+      feedbackContainerRef.current.scrollTop = 0;
+    }
     if (!isLoggedIn) return;
     if (!uploadedImageFile) {
       alert("沒有已上傳的圖片。");
@@ -677,9 +686,24 @@ export default function Home() {
           >
             <AccordionTrigger className="text-lg font-bold px-6">
               <div className="flex items-center justify-between w-full">
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">📜</span>
+                <div className="flex items-center space-x-6">
                   <span>設計任務</span>
+                  {isSaved && !openAccordionItems.includes('task') && (
+                    <div className="flex items-center gap-6 text-sm font-normal">
+                      <div className="flex items-baseline gap-2">
+                        <p className="font-medium text-gray-700 whitespace-nowrap">
+                          目標受眾：
+                        </p>
+                        <p className="font-normal">{targetUser}</p>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <p className="font-medium text-gray-700 whitespace-nowrap">
+                          用戶需求：
+                        </p>
+                        <p className="font-normal">{userNeed}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div
                   role="button"
@@ -779,7 +803,7 @@ export default function Home() {
           className={`col-span-1 border px-6 py-4 rounded ${currentModeConfig?.bgClass} flex flex-col min-h-0`}
         >
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">🐻‍❄️ AI 草圖協作夥伴</h2>
+            <h2 className="text-lg font-bold">AI 草圖協作夥伴</h2>
             <div className="flex items-center space-x-2">
               {feedbackHistory.length > 0 && (
                 <button
@@ -794,7 +818,7 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <div className="overflow-y-auto space-y-4 flex-grow">
+          <div ref={feedbackContainerRef} className="overflow-y-auto space-y-4 flex-grow">
             {(isLoadingAI || initialFeedbackState === "loading") && (
               <AILoadingIndicator config={currentModeConfig} />
             )}
@@ -844,11 +868,7 @@ export default function Home() {
                                 alt="受試者草圖"
                                 width={200}
                                 height={200}
-                                className="w-full max-w-48 max-h-48 object-contain border rounded cursor-pointer hover:opacity-80 transition-opacity mx-auto block"
-                                onClick={() =>
-                                  window.open(record.imageUrl, "_blank")
-                                }
-                                title="點擊查看大圖"
+                                className="w-full max-w-48 max-h-48 object-contain border rounded mx-auto block"
                               />
                             </div>
                           )}
@@ -864,14 +884,7 @@ export default function Home() {
                                   alt="AI 回饋圖像"
                                   width={512}
                                   height={512}
-                                  className="rounded-lg shadow-md w-full h-auto cursor-pointer"
-                                  onClick={() =>
-                                    window.open(
-                                      record.feedback.suggestions,
-                                      "_blank"
-                                    )
-                                  }
-                                  title="點擊查看大圖"
+                                  className="rounded-lg shadow-md w-full h-auto"
                                 />
                               </div>
                             )}
