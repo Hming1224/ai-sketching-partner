@@ -12,6 +12,16 @@ export async function POST(req) {
     const targetUser = formData.get("targetUser") || "";
     const userNeed = formData.get("userNeed") || "";
 
+    const previousPersonasRaw = formData.get("previousPersonas");
+    let previousPersonas = [];
+    if (previousPersonasRaw) {
+      try {
+        previousPersonas = JSON.parse(previousPersonasRaw);
+      } catch (e) {
+        console.error("Failed to parse previousPersonas:", e);
+      }
+    }
+
     let buffer;
     if (imageFile) {
       const arrayBuffer = await imageFile.arrayBuffer();
@@ -41,19 +51,24 @@ export async function POST(req) {
             "concept_materiality_chinese": "A description of the sensory experience of the materials, focusing on texture, temperature, and finish in Traditional Chinese."
           }`;
 
-    const sharedIdeationPrompt_task = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities.
+    const sharedIdeationPrompt_task = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
           Analyze the general design context: "${taskDescription}".
 
           Your tasks are:
-          1.  **Define a specific Target User and their Key Need** based on the context.
-          2.  **Based on the User and Need you just defined**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
+          1.  **Invent a creative and specific Target User and their Key Need.** This is the most important step. Your goal is to inspire the designer with a fresh perspective.
+          2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
           
+          **IMPORTANT RULES for defining the user:**
+          - **DO NOT be generic.** Avoid obvious personas like '行動不便的長者' or '普通的老人'.
+          - **BE CREATIVE.** Invent a specific character. For example: '一位喜歡在窗邊閱讀報紙的退休校長' or '一位因關節炎而難以長時間維持同一姿勢的奶奶'.
+          - **ENSURE the user and need are directly related.**
+
           Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
           
           Respond ONLY with a valid JSON object in the following format:
           {
-            "defined_target_user_chinese": "A specific user persona you have defined (e.g., '行動不便的長者').",
-            "defined_user_need_chinese": "A critical user need you have identified for them (e.g., '需要輕鬆進出椅子').",
+            "defined_target_user_chinese": "A creative, specific user persona you have invented.",
+            "defined_user_need_chinese": "A critical and specific user need you have identified for them.",
             "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the defined user in Traditional Chinese.",
             "concept_form_chinese": "A description of the abstract geometric forms, tailored to the defined user in Traditional Chinese.",
             "concept_materiality_chinese": "A sensory description of the materials, tailored to the defined user in Traditional Chinese."
@@ -107,9 +122,40 @@ export async function POST(req) {
               },
             }
           : null;
-      let prompt = isSketchMode
-        ? sharedIdeationPrompt_sketch
-        : sharedIdeationPrompt_task;
+      let prompt;
+      if (isSketchMode) {
+        prompt = sharedIdeationPrompt_sketch;
+      } else {
+        const previousPersonasString = previousPersonas.length > 0 
+          ? `
+          **PREVIOUSLY USED PERSONAS (DO NOT REPEAT THESE):**\n${previousPersonas.map(p => `          - User: ${p.user}, Need: ${p.need}`).join('\n')}`
+          : '';
+
+        prompt = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
+          Analyze the general design context: \"${taskDescription}\".
+          ${previousPersonasString}
+
+          Your tasks are:
+          1.  **Invent a COMPLETELY NEW and specific Target User and their Key Need.** This is the most important step. Your goal is to inspire the designer with a fresh perspective that is DIFFERENT from all previous ones.
+          2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
+          
+          **ABSOLUTE CRITICAL RULES for defining the user:**
+          - **YOU MUST NOT REPEAT or create a similar persona to the ones listed under "PREVIOUSLY USED PERSONAS".** This is a hard rule.
+          - **DO NOT be generic.** Avoid obvious personas like '行動不便的長者' or '普通的老人'.
+          - **BE CREATIVE AND SPECIFIC.** Invent a unique character. For example: '一位喜歡在陽台種植盆栽的獨居爺爺' or '一位需要長時間進行復健訓練，但又希望椅子能融入家居環境的女士'.
+          - **ENSURE the user and need are directly related.**
+
+          Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+          
+          Respond ONLY with a valid JSON object in the following format:
+          {
+            "defined_target_user_chinese": "A creative, specific, and COMPLETELY NEW user persona you have invented.",
+            "defined_user_need_chinese": "A critical and specific user need you have identified for them, which has not been addressed before.",
+            "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the new user in Traditional Chinese.",
+            "concept_form_chinese": "A description of the abstract geometric forms, tailored to the new user in Traditional Chinese.",
+            "concept_materiality_chinese": "A sensory description of the materials, tailored to the new user in Traditional Chinese."
+          }`;
+      }
 
       aiIdea = await getAiIdeation(prompt, isSketchMode, imagePart);
 
@@ -183,19 +229,21 @@ export async function POST(req) {
 
       if (isSketchMode && aiIdea.concept_structure_chinese) {
         const synthesisPrompt = `
-          You are a creative industrial designer at a top design firm. Your primary role is to identify future potential in early concepts.
-          Your tone must be direct, and analytical, yet collaborative and forward-looking.
+          You are a creative and inspiring design partner. Your goal is to provide gentle, thought-provoking feedback to a designer.
+          Your tone should be natural, conversational, and encouraging, like talking to a creative peer.
 
-          **Your response MUST follow this structure: 30% thesis, 70% opportunities/novel ideas.**
+          Your response MUST follow this structure:
+          1.  **(20%) Current Design:** Briefly summarize the core essence of the current design concepts in one sentence.
+          2.  **(80%) New Solutions:** Dedicate the rest of the response to proposing new, innovative solutions and possibilities that build upon the initial ideas.
 
-          1.  **(30%) Thesis:** Begin with a **brief, one-sentence summary** of the core design thesis that emerges from these concepts.
-          2.  **(70%) Opportunities & Novel Ideas:** Dedicate the majority of your response to **generating innovative ideas** for the next iteration.Your feedback should be precise , simple and inspiring.
+          **Guidelines:**
+          - Speak in **Traditional Chinese**.
+          - The response must be a single, flowing paragraph.
+          - **Strictly use between 150 and 200 characters.**
+          - **DO NOT use numbered lists, bullet points, or any kind of "一、", "二、" titles.**
+          - Maintain a highly descriptive and imaginative style, using plenty of rich adjectives to describe the feelings and forms.
 
-          Do not use overly flattering or subjective phrases. Focus on the potential of the new concepts. 
-          The entire response must be in **Traditional Chinese** and be provided in a paragraph, **with a maximum of 300 characters**.
-          Remove markdown syntax.
-          
-
+          **Design DNA:**
           - Concept of Structure: "${aiIdea.concept_structure_chinese}"
           - Concept of Form: "${aiIdea.concept_form_chinese}"
           - Concept of Materiality: "${aiIdea.concept_materiality_chinese}"
@@ -213,21 +261,20 @@ export async function POST(req) {
         finalAnalysis.narrative_feedback_chinese = narrativeFeedback.trim();
       } else if (!isSketchMode && aiIdea.concept_structure_chinese) {
         const taskSynthesisPrompt = `
-          You are a creative industrial designer at a top design firm. Your primary role is to identify future potential in early concepts.
-          Your tone must be direct, and analytical, yet collaborative and forward-looking.
+          You are a creative and inspiring design partner. Your goal is to provide gentle, thought-provoking feedback to a designer.
+          Your tone should be natural, conversational, and encouraging, like talking to a creative peer.
 
-          **Your response MUST follow this structure: 30% user focus, 70% opportunities/novel ideas.**
+          Your response MUST start with the following sentence structure: "我設定的目標受眾是 ${aiIdea.defined_target_user_chinese}, 他們的用戶需求是 ${aiIdea.defined_user_need_chinese}，針對這類群體和其需求，我們可以從幾個方向來發想..."
+          Then, continue by proposing new, innovative solutions and possibilities based on the design DNA.
 
-          1.  **(30%) User Focus:** Begin by briefly stating the **specific user and need** you have identified. For example: "為了提供你多樣靈感，我定義了針對 [您定義的用戶], 他們的需求在於 [您定義的需求]..."
-          2.  **(70%) Opportunities & Novel Ideas:** Based on that user focus, generate **innovative ideas** for a design concept. Your feedback should be precise, simple and inspiring.
+          **Guidelines:**
+          - Speak in **Traditional Chinese**.
+          - The response must be a single, flowing paragraph.
+          - **The final output must be strictly between 150 and 200 characters.**
+          - **DO NOT use numbered lists, bullet points, or any kind of "一、", "二、" titles.**
+          - Maintain a highly descriptive and imaginative style, using plenty of rich adjectives.
 
-          Do not use overly flattering or subjective phrases. Focus on the potential of the new concepts.
-          The entire response must be in **Traditional Chinese** and be provided in a single paragraph, **with a maximum of 300 characters**.
-          Remove markdown syntax.
-          
-
-          - Defined Target User: "${aiIdea.defined_target_user_chinese}"
-          - Defined User Need: "${aiIdea.defined_user_need_chinese}"
+          **Design DNA to inspire new solutions:**
           - Concept of Structure: "${aiIdea.concept_structure_chinese}"
           - Concept of Form: "${aiIdea.concept_form_chinese}"
           - Concept of Materiality: "${aiIdea.concept_materiality_chinese}"

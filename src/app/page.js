@@ -109,6 +109,16 @@ export default function Home() {
     "task",
     "context",
   ]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (canvasRef.current?.resizeCanvas) {
+        canvasRef.current.resizeCanvas();
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [openAccordionItems]);
   const [isSaved, setIsSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
@@ -380,12 +390,28 @@ export default function Home() {
         throw new Error("Failed to get canvas blob.");
       }
 
+      const previousPersonas = feedbackHistory
+        .map(record => {
+          const analysis = record.feedback?.analysis;
+          if (analysis?.defined_target_user_chinese && analysis?.defined_user_need_chinese) {
+            return { 
+              user: analysis.defined_target_user_chinese, 
+              need: analysis.defined_user_need_chinese 
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
       const formData = new FormData();
       formData.append("taskDescription", prompt);
       formData.append("image", blob, "sketch.png");
       formData.append("feedbackType", selectedMode);
       formData.append("targetUser", targetUser);
       formData.append("userNeed", userNeed);
+      if (previousPersonas.length > 0) {
+        formData.append("previousPersonas", JSON.stringify(previousPersonas));
+      }
 
       const res = await fetch("/api/feedback", {
         method: "POST",
@@ -442,12 +468,28 @@ export default function Home() {
       return;
     }
     setIsLoadingAI(true);
+    const previousPersonas = feedbackHistory
+      .map(record => {
+        const analysis = record.feedback?.analysis;
+        if (analysis?.defined_target_user_chinese && analysis?.defined_user_need_chinese) {
+          return { 
+            user: analysis.defined_target_user_chinese, 
+            need: analysis.defined_user_need_chinese 
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
     const formData = new FormData();
     formData.append("taskDescription", prompt);
     formData.append("image", uploadedImageFile, uploadedImageFile.name);
     formData.append("feedbackType", selectedMode);
     formData.append("targetUser", targetUser);
     formData.append("userNeed", userNeed);
+    if (previousPersonas.length > 0) {
+      formData.append("previousPersonas", JSON.stringify(previousPersonas));
+    }
     try {
       const res = await fetch("/api/feedback", {
         method: "POST",

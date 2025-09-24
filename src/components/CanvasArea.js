@@ -27,6 +27,22 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     }
   }, [onChange]);
 
+  const resizeCanvases = useCallback(() => {
+    const mainCanvas = mainCanvasRef.current;
+    const drawingCanvas = drawingCanvasRef.current;
+    if (!mainCanvas?.parentElement || !drawingCanvas) return;
+
+    const { width, height } = mainCanvas.parentElement.getBoundingClientRect();
+
+    if (mainCanvas.width !== width || mainCanvas.height !== height) {
+      mainCanvas.width = width;
+      mainCanvas.height = height;
+      drawingCanvas.width = width;
+      drawingCanvas.height = height;
+      setStrokes(s => [...s]);
+    }
+  }, []);
+
   useEffect(() => {
     const canvas = mainCanvasRef.current;
     if (!canvas) return;
@@ -54,7 +70,13 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
         getStroke(activeStroke.points, activeStroke)
       );
       const path = new Path2D(pathData);
-      ctx.fillStyle = activeStroke.isEraser ? "#FFFFFF" : activeStroke.color;
+
+      if (activeStroke.isEraser) {
+        ctx.fillStyle = "rgba(128, 128, 128, 0.5)"; // Gray trail for active eraser
+      } else {
+        ctx.fillStyle = activeStroke.color;
+      }
+      
       ctx.fill(path);
     }
   }, [activeStroke]);
@@ -173,26 +195,16 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     downloadCanvas,
     getDrawingData,
     isEmpty,
+    resizeCanvas: resizeCanvases,
     addChangeListener: (listener) => {},
     removeChangeListener: (listener) => {},
   }));
 
   useEffect(() => {
-    const mainCanvas = mainCanvasRef.current;
-    const drawingCanvas = drawingCanvasRef.current;
-
-    const resizeCanvases = () => {
-      const { width, height } = mainCanvas.parentElement.getBoundingClientRect();
-      mainCanvas.width = width;
-      mainCanvas.height = height;
-      drawingCanvas.width = width;
-      drawingCanvas.height = height;
-      setStrokes(s => [...s]);
-    };
-
-    window.addEventListener("resize", resizeCanvases);
     resizeCanvases();
+    window.addEventListener("resize", resizeCanvases);
 
+    const drawingCanvas = drawingCanvasRef.current;
     const handlePointerLeave = (e) => {
       if (isDrawingRef.current) {
         handlePointerUp(e);
@@ -204,11 +216,11 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
       window.removeEventListener("resize", resizeCanvases);
       drawingCanvas.removeEventListener("pointerleave", handlePointerLeave);
     };
-  }, []);
+  }, [resizeCanvases]);
 
   return (
     <div
-      className="relative w-full h-full touch-none bg-white rounded-lg overflow-hidden border border-gray-300"
+      className="relative w-full h-full touch-none bg-white rounded overflow-hidden border border-gray-300"
       style={{ width: "100%", height: "100%" }}
     >
       <canvas
