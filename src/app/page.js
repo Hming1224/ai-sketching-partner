@@ -122,6 +122,7 @@ export default function Home() {
   const [isSaved, setIsSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
+  
   const [initialFeedbackState, setInitialFeedbackState] = useState("hidden"); // "hidden", "loading", "visible"
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyPageIndex, setHistoryPageIndex] = useState(0);
@@ -152,6 +153,7 @@ export default function Home() {
   const updateCanvasEmptyStatus = useCallback(() => {
     setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
   }, []);
+
   useEffect(() => {
     if (isLoggedIn) {
       // 如果使用者已登入，為 body 加上 .disable-selection class
@@ -166,6 +168,7 @@ export default function Home() {
       document.body.classList.remove("disable-selection");
     };
   }, [isLoggedIn]); // 這個 effect 的依賴項是 isLoggedIn
+
   useEffect(() => {
     const canvasInstance = canvasRef.current;
     if (canvasInstance) {
@@ -175,6 +178,8 @@ export default function Home() {
       };
     }
   }, [updateCanvasEmptyStatus]);
+
+
 
   const handleUserInputChange = (setter, value) => {
     setter(value);
@@ -255,10 +260,10 @@ export default function Home() {
     setIsEditing(false);
     setTargetUser("");
     setUserNeed("");
-    setIsCanvasEmpty(true);
     setSketchCount(1);
     setInitialFeedbackState("hidden");
     setOpenAccordionItems(["task", "context"]);
+    setIsCanvasEmpty(true);
   };
   const handleUploadButtonClick = () => {
     if (isLoadingAI) return;

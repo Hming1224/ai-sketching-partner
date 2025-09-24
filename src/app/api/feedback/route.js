@@ -43,6 +43,7 @@ export async function POST(req) {
           **IMPORTANT RULE:** 
           - Use rich, descriptive adjectives focusing on form, texture, and ergonomics.
           - Be analytical ,conceptual , and inspirational. AVOID overly literary or metaphorical language.
+          - DO NOT provide any color-related suggestions.
           
           Respond ONLY with a valid JSON object in the following format:
           {
@@ -58,12 +59,15 @@ export async function POST(req) {
           1.  **Invent a creative and specific Target User and their Key Need.** This is the most important step. Your goal is to inspire the designer with a fresh perspective.
           2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
           
-          **IMPORTANT RULES for defining the user:**
-          - **DO NOT be generic.** Avoid obvious personas like '行動不便的長者' or '普通的老人'.
-          - **BE CREATIVE.** Invent a specific character. For example: '一位喜歡在窗邊閱讀報紙的退休校長' or '一位因關節炎而難以長時間維持同一姿勢的奶奶'.
-          - **ENSURE the user and need are directly related.**
+           - **IMPORTANT RULES for defining the user:**                                                                            │
+ │         - **DO NOT be generic.** Avoid obvious personas like '行動不便的長者' or '普通的老人'.                                │
+ │         - **BE CREATIVE.** Invent a specific character. For example: '一位喜歡在窗邊閱讀報紙的退休校長' or                    │
+ │            '一位因關節炎而難以長時間維持同一姿勢的奶奶'. 
+          - **ENSURE the user
+           and need are directly related.**
 
           Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+          - DO NOT provide any color-related suggestions.
           
           Respond ONLY with a valid JSON object in the following format:
           {
@@ -126,10 +130,13 @@ export async function POST(req) {
       if (isSketchMode) {
         prompt = sharedIdeationPrompt_sketch;
       } else {
-        const previousPersonasString = previousPersonas.length > 0 
-          ? `
-          **PREVIOUSLY USED PERSONAS (DO NOT REPEAT THESE):**\n${previousPersonas.map(p => `          - User: ${p.user}, Need: ${p.need}`).join('\n')}`
-          : '';
+        const previousPersonasString =
+          previousPersonas.length > 0
+            ? `
+          **PREVIOUSLY USED PERSONAS (DO NOT REPEAT THESE):**\n${previousPersonas
+            .map((p) => `          - User: ${p.user}, Need: ${p.need}`)
+            .join("\n")}`
+            : "";
 
         prompt = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
           Analyze the general design context: \"${taskDescription}\".
@@ -146,6 +153,7 @@ export async function POST(req) {
           - **ENSURE the user and need are directly related.**
 
           Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+          - DO NOT provide any color-related suggestions.
           
           Respond ONLY with a valid JSON object in the following format:
           {
@@ -239,7 +247,7 @@ export async function POST(req) {
           **Guidelines:**
           - Speak in **Traditional Chinese**.
           - The response must be a single, flowing paragraph.
-          - **Strictly use between 150 and 200 characters.**
+          - **Strictly use between 100 and 150 characters.**
           - **DO NOT use numbered lists, bullet points, or any kind of "一、", "二、" titles.**
           - Maintain a highly descriptive and imaginative style, using plenty of rich adjectives to describe the feelings and forms.
 
@@ -270,7 +278,7 @@ export async function POST(req) {
           **Guidelines:**
           - Speak in **Traditional Chinese**.
           - The response must be a single, flowing paragraph.
-          - **The final output must be strictly between 150 and 200 characters.**
+          - **The final output must be strictly between 100 and 150 characters.**
           - **DO NOT use numbered lists, bullet points, or any kind of "一、", "二、" titles.**
           - Maintain a highly descriptive and imaginative style, using plenty of rich adjectives.
 

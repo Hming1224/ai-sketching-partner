@@ -11,12 +11,24 @@ import getSvgPathFromStroke from "@/lib/getSvgPathFromStroke";
 
 const MIN_PRESSURE = 0.015;
 
+function throttle(callback, delay) {
+  let previousCall = new Date().getTime();
+  return function() {
+    const time = new Date().getTime();
+
+    if ((time - previousCall) >= delay) {
+      previousCall = time;
+      callback.apply(null, arguments);
+    }
+  };
+}
+
 const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const mainCanvasRef = useRef(null);
   const drawingCanvasRef = useRef(null);
   const [strokes, setStrokes] = useState([]);
   const [activeStroke, setActiveStroke] = useState(null);
-  const isDrawingRef = useRef(false);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const [history, setHistory] = useState([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -81,7 +93,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     }
   }, [activeStroke]);
 
-  const getCanvasPosition = (e) => {
+  const getCanvasPosition = useCallback((e) => {
     const canvas = mainCanvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
@@ -89,58 +101,77 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-  };
+  }, []);
 
-  const handlePointerDown = (e) => {
-    if (e.button !== 0) return;
-    isDrawingRef.current = true;
-    const { x, y } = getCanvasPosition(e);
+  const handlePointerDown = useCallback(
+    (e) => {
+      if (e.button !== 0 || e.pointerType === 'touch') return;
+      setIsDrawing(true);
+      const { x, y } = getCanvasPosition(e);
 
-    let compensatedPressure = e.pressure;
-    if (e.pressure > 0 && e.pressure < MIN_PRESSURE) {
-      compensatedPressure = MIN_PRESSURE;
-    }
+      let compensatedPressure = e.pressure;
+      if (e.pressure > 0 && e.pressure < MIN_PRESSURE) {
+        compensatedPressure = MIN_PRESSURE;
+      }
 
-    const newStroke = {
-      points: [{ x, y, pressure: compensatedPressure }],
-      ...brushOptions,
-    };
-    setActiveStroke(newStroke);
-  };
+      setActiveStroke({
+        points: [{ x, y, pressure: compensatedPressure }],
+        ...brushOptions,
+      });
+    },
+    [brushOptions, getCanvasPosition]
+  );
 
-  const handlePointerMove = (e) => {
-    if (!isDrawingRef.current) return;
-    e.preventDefault();
+  const handlePointerMove = useCallback(
+    throttle((e) => {
+      if (!isDrawing) return;
+      e.preventDefault();
 
-    let compensatedPressure = e.pressure;
-    if (e.pressure > 0 && e.pressure < MIN_PRESSURE) {
-      compensatedPressure = MIN_PRESSURE;
-    }
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
 
-    const { x, y } = getCanvasPosition(e);
-    setActiveStroke((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        points: [...prev.points, { x, y, pressure: compensatedPressure }],
-      };
+      setActiveStroke((prev) => {
+        if (!prev) return null;
+        const newPoints = events.map((event) => {
+          let compensatedPressure = event.pressure;
+          if (event.pressure > 0 && event.pressure < MIN_PRESSURE) {
+            compensatedPressure = MIN_PRESSURE;
+          }
+          const { x, y } = getCanvasPosition(event);
+          return { x, y, pressure: compensatedPressure };
+        });
+        return {
+          ...prev,
+          points: [...prev.points, ...newPoints],
+        };
+      });
+    }, 16),
+    [isDrawing, getCanvasPosition]
+  );
+
+  const handlePointerUp = useCallback(() => {
+    if (!isDrawing) return;
+    setIsDrawing(false);
+
+    setActiveStroke((currentActiveStroke) => {
+      if (currentActiveStroke && currentActiveStroke.points.length > 0) {
+        setStrokes((prevStrokes) => {
+          const newStrokes = [...prevStrokes, currentActiveStroke];
+          setHistory((prevHistory) => {
+            const newHistory = [
+              ...prevHistory.slice(0, historyIndex + 1),
+              newStrokes,
+            ];
+            setHistoryIndex(newHistory.length - 1);
+            return newHistory;
+          });
+          return newStrokes;
+        });
+      }
+      return null;
     });
-  };
 
-  const handlePointerUp = () => {
-    if (!isDrawingRef.current) return;
-    isDrawingRef.current = false;
-
-    if (activeStroke && activeStroke.points.length > 1) {
-      const newStrokes = [...strokes, activeStroke];
-      setStrokes(newStrokes);
-      const newHistory = [...history.slice(0, historyIndex + 1), newStrokes];
-      setHistory(newHistory);
-      setHistoryIndex(newHistory.length - 1);
-    }
-    setActiveStroke(null);
     handleCanvasChange();
-  };
+  }, [isDrawing, handleCanvasChange, history, historyIndex]);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -195,34 +226,35 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     downloadCanvas,
     getDrawingData,
     isEmpty,
-    isDrawing: () => isDrawingRef.current,
+    isDrawing: () => isDrawing,
     resizeCanvas: resizeCanvases,
     addChangeListener: (listener) => {},
     removeChangeListener: (listener) => {},
   }));
 
   useEffect(() => {
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [handlePointerMove, handlePointerUp]);
+
+  useEffect(() => {
     resizeCanvases();
     window.addEventListener("resize", resizeCanvases);
 
-    const drawingCanvas = drawingCanvasRef.current;
-    const handlePointerLeave = (e) => {
-      if (isDrawingRef.current) {
-        handlePointerUp(e);
-      }
-    };
-    drawingCanvas.addEventListener("pointerleave", handlePointerLeave);
-
     return () => {
       window.removeEventListener("resize", resizeCanvases);
-      drawingCanvas.removeEventListener("pointerleave", handlePointerLeave);
     };
   }, [resizeCanvases]);
 
   return (
     <div
-      className="relative w-full h-full touch-none bg-white rounded overflow-hidden border border-gray-300"
-      style={{ width: "100%", height: "100%" }}
+      className="relative w-full h-full touch-none select-none bg-white rounded overflow-hidden border border-gray-300"
+      style={{ width: "100%", height: "100%", userSelect: "none", WebkitUserSelect: "none" }}
     >
       <canvas
         ref={mainCanvasRef}
@@ -232,8 +264,6 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
         ref={drawingCanvasRef}
         className="absolute top-0 left-0"
         onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
       />
     </div>
   );
