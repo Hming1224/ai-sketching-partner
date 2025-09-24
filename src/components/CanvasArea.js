@@ -195,6 +195,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     downloadCanvas,
     getDrawingData,
     isEmpty,
+    isDrawing: () => isDrawingRef.current,
     resizeCanvas: resizeCanvases,
     addChangeListener: (listener) => {},
     removeChangeListener: (listener) => {},
