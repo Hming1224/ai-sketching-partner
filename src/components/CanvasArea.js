@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import getStroke from "perfect-freehand";
-import { getSvgPathFromStroke } from "@/lib/getSvgPathFromStroke";
+import getSvgPathFromStroke from "@/lib/getSvgPathFromStroke";
 
 const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const mainCanvasRef = useRef(null);
