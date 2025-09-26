@@ -82,7 +82,7 @@ export async function POST(req) {
       let responseText;
       try {
         const ideationModel = genAI.getGenerativeModel({
-          model: "gemini-1.5-pro-latest",
+          model: "gemini-2.5-flash",
         });
         const content =
           isSketchMode && imagePart ? [prompt, imagePart] : [prompt];
@@ -258,7 +258,7 @@ export async function POST(req) {
         `;
 
         const synthesisModel = genAI.getGenerativeModel({
-          model: "gemini-1.5-pro-latest",
+          model: "gemini-2.5-flash",
         });
         const synthesisResult = await synthesisModel.generateContent(
           synthesisPrompt
@@ -289,7 +289,7 @@ export async function POST(req) {
         `;
 
         const synthesisModel = genAI.getGenerativeModel({
-          model: "gemini-1.5-pro-latest",
+          model: "gemini-2.5-flash",
         });
         const synthesisResult = await synthesisModel.generateContent(
           taskSynthesisPrompt
