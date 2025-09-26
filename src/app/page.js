@@ -272,7 +272,6 @@ export default function Home() {
     if (file) {
       setUploadedImageFile(file);
       setImagePreviewUrl(URL.createObjectURL(file));
-      canvasRef.current?.clearCanvas();
       setIsCanvasEmpty(false);
     }
   };
@@ -452,6 +451,12 @@ export default function Home() {
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
 
+      // Clear canvas and uploaded image on successful feedback
+      if (feedback && !feedback.analysis?.error) {
+        canvasRef.current?.clearCanvas();
+        handleClearUploadedImage();
+      }
+
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -527,10 +532,32 @@ export default function Home() {
         docId: result.docId,
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
-      setSketchCount((prev) => prev + 1);
+
+      // Clear uploaded image and canvas on successful feedback
+      if (feedback && !feedback.analysis?.error) {
+        handleClearUploadedImage();
+        canvasRef.current?.clearCanvas();
+      }
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
+
+      // 將錯誤資訊加入 feedbackHistory，以便前端顯示錯誤訊息
+      const errorFeedback = {
+        type: "image",
+        suggestions: null,
+        analysis: { error: error.message || "未知錯誤" },
+      };
+      const newFeedbackRecord = {
+        id: `error-${Date.now()}`,
+        timestamp: new Date(),
+        taskDescription: prompt,
+        feedback: errorFeedback,
+        feedbackMode: selectedMode,
+        imageUrl: imagePreviewUrl, // 保留上傳的圖片預覽
+        docId: null,
+      };
+      setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
     } finally {
       setIsLoadingAI(false);
     }
@@ -939,11 +966,7 @@ export default function Home() {
                                   height={512}
                                   className="rounded-lg shadow-md w-full h-auto"
                                   onLoad={() => {
-                                    console.log(
-                                      "AI image loaded, clearing canvas."
-                                    );
-                                    canvasRef.current?.clearCanvas();
-                                    handleClearUploadedImage();
+                                    console.log("AI image loaded.");
                                   }}
                                 />
                               </div>

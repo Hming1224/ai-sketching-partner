@@ -65,7 +65,7 @@ export async function POST(req) {
           2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
           
           **IMPORTANT RULES for defining the user:**
-          - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., residents, caregivers, family visitors).**
+          - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., the elderly, caregivers, family visitors).**
           - **LENGTH: 
             defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 20 characters.**
 
@@ -83,15 +83,20 @@ export async function POST(req) {
           }`;
 
     const getAiIdeation = async (prompt, isSketchMode, imagePart) => {
-      const MAX_RETRIES = 6;
+      const MAX_RETRIES = 3;
       for (let i = 0; i < MAX_RETRIES; i++) {
         try {
           const ideationModel = genAI.getGenerativeModel({
             model: "gemini-2.5-flash", // Reverting to the more stable model
           });
-          const content =
-            isSketchMode && imagePart ? [prompt, imagePart] : [prompt];
-          const result = await ideationModel.generateContent(content);
+          // [核心修正一] 將傳送的內容包裹成 SDK 要求的標準格式
+          const parts = [{ text: prompt }];
+          if (isSketchMode && imagePart) {
+            parts.push(imagePart);
+          }
+          const result = await ideationModel.generateContent({
+            contents: [{ role: "user", parts: parts }],
+          });
           const responseText = result.response.text();
 
           // If successful, parse and return the JSON
@@ -151,7 +156,7 @@ export async function POST(req) {
           2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
           
           **ABSOLUTE CRITICAL RULES for defining the user:**
-          - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., residents, caregivers, family visitors).**
+          - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., the elderly, caregivers, family visitors).**
           - **YOU MUST NOT REPEAT or create a similar persona to the ones listed under "PREVIOUSLY USED PERSONAS".** This is a hard rule.
           - **LENGTH: defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 40 characters.**
           - **ENSURE the user and need are directly related.**
@@ -189,10 +194,15 @@ export async function POST(req) {
               let imageGenerationPrompt;
               if (feedbackType === "sketch-image") {
                 imageGenerationPrompt = `
-                  A conceptual form study of a chair, presented as an **exploratory industrial design sketch**.
-                  The main form is defined by its enclosing quality: "${aiIdea.concept_structure_chinese}".
-                  The overall volumetric shape is composed of: "${aiIdea.concept_form_chinese}".
-                  The surface and material properties should convey: "${aiIdea.concept_materiality_chinese}".
+                  **Core Task:** You are a visionary designer tasked with radically reinterpreting a user's sketch. Your goal is to produce a new concept that is **bold, unexpected, and pushes the boundaries** of the original idea.
+
+                  - **Deconstruct and Exaggerate:** Don't just transform the sketch, deconstruct it. Identify its most interesting feature—a curve, a joint, an angle—and **exaggerate it dramatically**.
+                  - **Radical Reinterpretation:** Use the user's sketch as a faint echo, not a foundation. Your output should be a **visually provocative evolution** that challenges the initial concept. Blend the core essence with the new conceptual ideas below in a way that feels entirely new.
+
+                  **New Conceptual Ideas:**
+                  - The main form is defined by its enclosing quality: "${aiIdea.concept_structure_chinese}".
+                  - The overall volumetric shape is composed of: "${aiIdea.concept_form_chinese}".
+                  - The surface and material properties should convey: "${aiIdea.concept_materiality_chinese}".
 
                   **Style:** The sketch must look like a rapid, early-stage brainstorming drawing.
                   - Use **sketchy, unrefined, and multiple overlapping lines** to build up the form.
@@ -228,9 +238,15 @@ export async function POST(req) {
               const imageGenModel = genAI.getGenerativeModel({
                 model: "gemini-2.5-flash-image-preview",
               });
-              const imageGenResult = await imageGenModel.generateContent([
-                { text: imageGenerationPrompt },
-              ]);
+              // [核心修正二] 同樣地，將傳送的內容包裹成 SDK 標準格式
+              const imageParts = [{ text: imageGenerationPrompt }];
+              if (isSketchMode && imagePart) {
+                // sketch-image 模式下傳入原始圖片
+                imageParts.push(imagePart);
+              }
+              const imageGenResult = await imageGenModel.generateContent({
+                contents: [{ role: "user", parts: imageParts }],
+              });
               const imagePartResponse =
                 imageGenResult.response.candidates?.[0]?.content?.parts?.find(
                   (p) => p.inlineData
@@ -273,7 +289,7 @@ export async function POST(req) {
     } catch (error) {
       console.error("AI 回饋生成錯誤:", error);
       feedback = {
-        type: "text",
+        type: feedbackType.includes("image") ? "image" : "text",
         suggestions: null,
         analysis: { error: error.message },
       };
