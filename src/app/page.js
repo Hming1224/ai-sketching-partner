@@ -122,16 +122,7 @@ export default function Home() {
   const [isSaved, setIsSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
-  const [feedbackJustReceived, setFeedbackJustReceived] = useState(false);
 
-  useEffect(() => {
-    if (feedbackJustReceived) {
-      canvasRef.current?.clearCanvas();
-      handleClearUploadedImage();
-      setFeedbackJustReceived(false); // Reset the trigger
-    }
-  }, [feedbackJustReceived]);
-  
   const [initialFeedbackState, setInitialFeedbackState] = useState("hidden"); // "hidden", "loading", "visible"
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyPageIndex, setHistoryPageIndex] = useState(0);
@@ -187,8 +178,6 @@ export default function Home() {
       };
     }
   }, [updateCanvasEmptyStatus]);
-
-
 
   const handleUserInputChange = (setter, value) => {
     setter(value);
@@ -405,12 +394,15 @@ export default function Home() {
       }
 
       const previousPersonas = feedbackHistory
-        .map(record => {
+        .map((record) => {
           const analysis = record.feedback?.analysis;
-          if (analysis?.defined_target_user_chinese && analysis?.defined_user_need_chinese) {
-            return { 
-              user: analysis.defined_target_user_chinese, 
-              need: analysis.defined_user_need_chinese 
+          if (
+            analysis?.defined_target_user_chinese &&
+            analysis?.defined_user_need_chinese
+          ) {
+            return {
+              user: analysis.defined_target_user_chinese,
+              need: analysis.defined_user_need_chinese,
             };
           }
           return null;
@@ -459,7 +451,7 @@ export default function Home() {
 
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
-      setFeedbackJustReceived(true);
+
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -483,12 +475,15 @@ export default function Home() {
     }
     setIsLoadingAI(true);
     const previousPersonas = feedbackHistory
-      .map(record => {
+      .map((record) => {
         const analysis = record.feedback?.analysis;
-        if (analysis?.defined_target_user_chinese && analysis?.defined_user_need_chinese) {
-          return { 
-            user: analysis.defined_target_user_chinese, 
-            need: analysis.defined_user_need_chinese 
+        if (
+          analysis?.defined_target_user_chinese &&
+          analysis?.defined_user_need_chinese
+        ) {
+          return {
+            user: analysis.defined_target_user_chinese,
+            need: analysis.defined_user_need_chinese,
           };
         }
         return null;
@@ -533,7 +528,6 @@ export default function Home() {
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
-      setFeedbackJustReceived(true);
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -935,8 +929,8 @@ export default function Home() {
                           <h5 className="text-sm font-medium mb-2 text-gray-700">
                             設計建議：
                           </h5>
-                          {record.feedback.type === "image" &&
-                            record.feedback.suggestions && (
+                          {record.feedback.type === "image" ? (
+                            record.feedback.suggestions ? (
                               <div className="mt-2 mb-4">
                                 <Image
                                   src={record.feedback.suggestions}
@@ -944,9 +938,21 @@ export default function Home() {
                                   width={512}
                                   height={512}
                                   className="rounded-lg shadow-md w-full h-auto"
+                                  onLoad={() => {
+                                    console.log(
+                                      "AI image loaded, clearing canvas."
+                                    );
+                                    canvasRef.current?.clearCanvas();
+                                    handleClearUploadedImage();
+                                  }}
                                 />
                               </div>
-                            )}
+                            ) : (
+                              <div className="mt-2 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="text-sm text-red-700">圖片預覽失敗，請稍後再試。</p>
+                              </div>
+                            )
+                          ) : null}
                           {(record.feedbackMode === "sketch-text" ||
                             record.feedbackMode === "task-text") &&
                             record.feedback.analysis &&
