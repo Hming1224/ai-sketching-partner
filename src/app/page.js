@@ -122,6 +122,15 @@ export default function Home() {
   const [isSaved, setIsSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
+  const [feedbackJustReceived, setFeedbackJustReceived] = useState(false);
+
+  useEffect(() => {
+    if (feedbackJustReceived) {
+      canvasRef.current?.clearCanvas();
+      handleClearUploadedImage();
+      setFeedbackJustReceived(false); // Reset the trigger
+    }
+  }, [feedbackJustReceived]);
   
   const [initialFeedbackState, setInitialFeedbackState] = useState("hidden"); // "hidden", "loading", "visible"
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -450,7 +459,7 @@ export default function Home() {
 
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
-      canvasRef.current?.clearCanvas();
+      setFeedbackJustReceived(true);
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -524,7 +533,7 @@ export default function Home() {
       };
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
-      handleClearUploadedImage();
+      setFeedbackJustReceived(true);
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");

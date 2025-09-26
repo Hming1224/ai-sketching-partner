@@ -1,0 +1,996 @@
+
+> ai-sketching-partner@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1885ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1220ms (783 modules)
+ GET / 200 in 1575ms
+ ✓ Compiled in 288ms (330 modules)
+ ✓ Compiled /api/feedback in 136ms (482 modules)
+ POST /api/feedback 200 in 4195ms
+ POST /api/feedback 200 in 3157ms
+Gemini API call failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:94:32)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+AI 回饋生成錯誤: Error: AI Ideation API call failed. Please check the API key and network connection.
+    at getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:98:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/feedback 200 in 200ms
+Gemini API call failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:94:32)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+AI 回饋生成錯誤: Error: AI Ideation API call failed. Please check the API key and network connection.
+    at getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:98:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/feedback 200 in 180ms
+ GET / 200 in 181ms
+ POST /api/feedback 200 in 3686ms
+ POST /api/feedback 200 in 4498ms
+ ✓ Compiled in 318ms (783 modules)
+ ✓ Compiled in 119ms (330 modules)
+ ✓ Compiled in 124ms (330 modules)
+ ✓ Compiled in 94ms (330 modules)
+ ✓ Compiled in 125ms (330 modules)
+ ✓ Compiled in 89ms (330 modules)
+ ✓ Compiled in 122ms (330 modules)
+ ✓ Compiled in 155ms (330 modules)
+ ✓ Compiled in 87ms (330 modules)
+ ✓ Compiled in 111ms (330 modules)
+ ✓ Compiled in 70ms (330 modules)
+ ✓ Compiled in 90ms (330 modules)
+ ✓ Compiled in 109ms (330 modules)
+ ✓ Compiled in 77ms (330 modules)
+ ✓ Compiled /api/feedback in 106ms (482 modules)
+ POST /api/feedback 200 in 2511ms
+ POST /api/feedback 200 in 1739ms
+ ✓ Compiled in 473ms (783 modules)
+ ✓ Compiled in 280ms (783 modules)
+ ✓ Compiled in 184ms (783 modules)
+ ✓ Compiled /api/feedback in 73ms (482 modules)
+ POST /api/feedback 200 in 2247ms
+ ✓ Compiled in 203ms (812 modules)
+ ✓ Compiled in 143ms (812 modules)
+ ✓ Compiled in 159ms (812 modules)
+ ✓ Compiled in 113ms (812 modules)
+ ✓ Compiled in 216ms (783 modules)
+ ✓ Compiled in 99ms (330 modules)
+ ✓ Compiled in 101ms (330 modules)
+ ✓ Compiled in 159ms (330 modules)
+ ✓ Compiled in 108ms (330 modules)
+ ✓ Compiled in 73ms (330 modules)
+ ✓ Compiled in 90ms (330 modules)
+ ✓ Compiled in 100ms (330 modules)
+ ✓ Compiled in 110ms (330 modules)
+ ✓ Compiled /api/feedback in 121ms (482 modules)
+ POST /api/feedback 200 in 2685ms
+ POST /api/feedback 200 in 10687ms
+ POST /api/feedback 200 in 5294ms
+ ✓ Compiled in 277ms (783 modules)
+ ✓ Compiled in 79ms (330 modules)
+ ✓ Compiled in 118ms (330 modules)
+ ✓ Compiled in 65ms (330 modules)
+ ✓ Compiled in 125ms (330 modules)
+ ✓ Compiled in 112ms (330 modules)
+ ✓ Compiled /api/feedback in 79ms (482 modules)
+ POST /api/feedback 200 in 7455ms
+ ✓ Compiled in 206ms (812 modules)
+ ✓ Compiled in 141ms (812 modules)
+ ✓ Compiled in 115ms (812 modules)
+ ✓ Compiled in 175ms (812 modules)
+ ✓ Compiled in 167ms (812 modules)
+AI 回饋生成錯誤: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:250:45)
+    at async Promise.all (index 0)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:257:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ POST /api/feedback 200 in 3661ms
+ POST /api/feedback 200 in 9028ms
+ ✓ Compiled in 174ms (812 modules)
+ ✓ Compiled in 162ms (812 modules)
+ ✓ Compiled in 162ms (812 modules)
+ POST /api/feedback 200 in 4244ms
+ ✓ Compiled in 182ms (812 modules)
+ ✓ Compiled in 160ms (812 modules)
+ ✓ Compiled in 117ms (812 modules)
+AI 回饋生成錯誤: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:250:45)
+    at async Promise.all (index 0)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:257:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ POST /api/feedback 200 in 4503ms
+ ✓ Compiled in 318ms (783 modules)
+ ✓ Compiled /api/feedback in 93ms (482 modules)
+ POST /api/feedback 200 in 5011ms
+ ✓ Compiled in 302ms (783 modules)
+ ✓ Compiled /api/feedback in 102ms (482 modules)
+ POST /api/feedback 200 in 5614ms
+ POST /api/feedback 200 in 2323ms
+ ✓ Compiled in 340ms (812 modules)
+ POST /api/feedback 200 in 2186ms
+ POST /api/feedback 200 in 2349ms
+ POST /api/feedback 200 in 2563ms
+ POST /api/feedback 200 in 2012ms
+ POST /api/feedback 200 in 2310ms
+ ✓ Compiled in 391ms (783 modules)
+ ✓ Compiled /api/feedback in 104ms (482 modules)
+ POST /api/feedback 200 in 2656ms
+ POST /api/feedback 200 in 2348ms
+AI 回饋生成錯誤: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:256:45)
+    at async Promise.all (index 0)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:263:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ POST /api/feedback 200 in 1536ms
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 2 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 3 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+AI 回饋生成錯誤: Error: AI Ideation API call failed after 3 attempts. Please check the API key and network connection.
+    at getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:108:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/feedback 200 in 4370ms
+ ✓ Compiled in 267ms (783 modules)
+ ✓ Compiled /api/feedback in 84ms (482 modules)
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+ POST /api/feedback 200 in 4154ms
+ POST /api/feedback 200 in 1479ms
+ POST /api/feedback 200 in 9922ms
+ ✓ Compiled in 316ms (783 modules)
+ ✓ Compiled /api/feedback in 117ms (482 modules)
+ POST /api/feedback 200 in 10644ms
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+ POST /api/feedback 200 in 11795ms
+ POST /api/feedback 200 in 8363ms
+ POST /api/feedback 200 in 27811ms
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 2 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 3 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 4 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 5 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 6 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+AI 回饋生成錯誤: Error: AI Ideation API call failed after 6 attempts. Please check the API key and network connection.
+    at getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:108:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/feedback 200 in 11446ms
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 2 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 3 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Gemini API call attempt 4 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+AI 回饋生成錯誤: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:202:44)
+    at async Promise.all (index 0)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:271:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ POST /api/feedback 200 in 10986ms
+ ✓ Compiled in 280ms (812 modules)
+ ✓ Compiled in 148ms (812 modules)
+ ✓ Compiled in 193ms (812 modules)
+ ✓ Compiled in 264ms (783 modules)
+ ✓ Compiled in 111ms (330 modules)
+ ✓ Compiled /api/feedback in 114ms (482 modules)
+ POST /api/feedback 200 in 49772ms
+Gemini API call attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async getAiIdeation (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:90:36)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:151:22)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Service unavailable, retrying in 2 seconds...
+Image generation attempt 1 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:284:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Image generation service unavailable, retrying in 2 seconds...
+AI 回饋生成錯誤: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:277:45)
+    at async Promise.all (index 1)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:284:13)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/hmingdesigner/Documents/ai-sketching-partner/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ POST /api/feedback 200 in 29532ms
+Image generation attempt 2 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Image generation service unavailable, retrying in 2 seconds...
+Image generation attempt 3 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Image generation service unavailable, retrying in 2 seconds...
+Image generation attempt 4 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Image generation service unavailable, retrying in 2 seconds...
+Image generation attempt 5 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+Image generation service unavailable, retrying in 2 seconds...
+Image generation attempt 6 failed: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent: [503 Service Unavailable] The service is currently unavailable.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async eval (webpack-internal:///(rsc)/./src/app/api/feedback/route.js:205:52)
+    at async Promise.all (index 0) {
+  status: 503,
+  statusText: 'Service Unavailable',
+  errorDetails: undefined
+}
+ ✓ Compiled /_not-found in 299ms (772 modules)
+ GET / 404 in 390ms
+ GET /_next/static/css/app/layout.css?v=1758889426434 404 in 67ms
+ GET /_next/static/chunks/main-app.js?v=1758889426434 404 in 68ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 67ms
+ ✓ Compiled in 250ms (330 modules)
+ ✓ Compiled in 188ms (330 modules)
+[?25h
