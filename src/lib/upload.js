@@ -11,10 +11,10 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
  * @param {string} sketchType A descriptor for the sketch type (e.g., 'user_sketch', 'ai_suggestion').
  * @returns {Promise<string|null>} The download URL of the uploaded image, or null on failure.
  */
-export async function uploadImage(blob, participantId, sketchIndex, sketchType) {
+export async function uploadImage(blob, participantId, sketchIndex, sketchType, feedbackMode) {
   try {
-    if (!participantId || sketchIndex === undefined || !sketchType) {
-      throw new Error("Participant ID, sketch index, and sketch type are required for upload.");
+    if (!participantId || sketchIndex === undefined || !sketchType || !feedbackMode) {
+      throw new Error("Participant ID, sketch index, sketch type, and feedback mode are required for upload.");
     }
     const storage = getStorage();
     // Using ISO string for a sortable and unique timestamp, replacing characters that are invalid in some file systems.
@@ -22,7 +22,7 @@ export async function uploadImage(blob, participantId, sketchIndex, sketchType) 
     // Pad the sketchIndex for better sorting (e.g., 001, 002, ...)
     const paddedIndex = String(sketchIndex).padStart(3, '0');
     const fileName = `${participantId}_${paddedIndex}_${sketchType}_${timestamp}.png`;
-    const filePath = `sketches/${participantId}/${fileName}`;
+    const filePath = `sketches/${feedbackMode}_${participantId}/${fileName}`;
 
     const storageRef = ref(storage, filePath);
     const snapshot = await uploadBytes(storageRef, blob);
@@ -55,7 +55,9 @@ export async function uploadSketchAndFeedback(
   sketchIndex, // <-- New parameter
   taskDescription,
   feedback,
-  feedbackMode
+  feedbackMode,
+  targetUser, // <-- Add targetUser
+  userNeed // <-- Add userNeed
 ) {
   try {
     if (!feedback) {
@@ -63,7 +65,7 @@ export async function uploadSketchAndFeedback(
     }
 
     // Pass participantId and sketchIndex to uploadImage
-    const userSketchUrl = await uploadImage(blob, participantId, sketchIndex, 'user_sketch');
+    const userSketchUrl = await uploadImage(blob, participantId, sketchIndex, 'user_sketch', feedbackMode);
     if (!userSketchUrl) {
       throw new Error("無法上傳使用者草圖圖片。");
     }
@@ -84,7 +86,7 @@ export async function uploadSketchAndFeedback(
         const buffer = Buffer.from(cleanedBase64, "base64");
         const aiImageBlob = new Blob([buffer], { type: "image/png" });
         // Pass participantId and sketchIndex for the AI image as well
-        aiSuggestionsUrl = await uploadImage(aiImageBlob, participantId, sketchIndex, 'ai_suggestion');
+        aiSuggestionsUrl = await uploadImage(aiImageBlob, participantId, sketchIndex, 'ai_suggestion', feedbackMode);
         if (!aiSuggestionsUrl) {
           throw new Error("無法上傳 AI 回饋圖片。");
         }
@@ -103,6 +105,8 @@ export async function uploadSketchAndFeedback(
       aiFeedbackSuggestionsUrl: aiSuggestionsUrl,
       aiFeedbackSuggestions: aiAnalysis,
       feedbackMode: feedbackMode,
+      targetUser: targetUser, // <-- Save targetUser
+      userNeed: userNeed, // <-- Save userNeed
       timestamp: serverTimestamp(),
     };
 

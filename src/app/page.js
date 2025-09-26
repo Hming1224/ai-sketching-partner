@@ -435,7 +435,9 @@ export default function Home() {
         sketchCount,
         prompt,
         feedback,
-        selectedMode
+        selectedMode,
+        targetUser,
+        userNeed
       );
 
       const newFeedbackRecord = {
@@ -520,7 +522,9 @@ export default function Home() {
         sketchCount,
         prompt,
         feedback,
-        selectedMode
+        selectedMode,
+        targetUser,
+        userNeed
       );
       const newFeedbackRecord = {
         id: result.docId,
