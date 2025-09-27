@@ -199,15 +199,6 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     handleCanvasChange();
   };
 
-  const downloadCanvas = () => {
-    const canvas = mainCanvasRef.current;
-    const dataUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = "sketch.png";
-    link.click();
-  };
-
   const getDrawingData = () => {
     return {
       history: strokes,
@@ -223,7 +214,6 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     undo,
     redo,
     clearCanvas,
-    downloadCanvas,
     getDrawingData,
     isEmpty,
     isDrawing: () => isDrawing,
@@ -231,6 +221,8 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     addChangeListener: (listener) => {},
     removeChangeListener: (listener) => {},
   }));
+
+
 
   useEffect(() => {
     window.addEventListener("pointermove", handlePointerMove);

@@ -97,9 +97,6 @@ export default function Home() {
   const savedEraserSizeRef = useRef(60); // 橡皮擦預設尺寸為 60
   const inputFocusStyle = "focus-visible:ring-2 focus-visible:ring-ring";
   const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [uploadedImageFile, setUploadedImageFile] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
-  const fileInputRef = useRef(null);
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
   const canvasRef = useRef();
   const [prompt, setPrompt] = useState(
@@ -227,10 +224,7 @@ export default function Home() {
     canvasRef.current?.clearCanvas();
     setIsCanvasEmpty(true);
   };
-  const handleDownload = () => {
-    if (isLoadingAI) return;
-    canvasRef.current?.downloadCanvas();
-  };
+
   const handleParticipantLogin = async () => {
     if (!participantId.trim()) {
       alert("請輸入受試者 ID");
@@ -262,7 +256,6 @@ export default function Home() {
     setIsLoggedIn(false);
     setFeedbackHistory([]);
     setBrushOptions({ ...DEFAULT_BRUSH_OPTIONS });
-    handleClearUploadedImage();
     setIsSaved(false);
     setIsEditing(false);
     setTargetUser("");
@@ -272,27 +265,7 @@ export default function Home() {
     setOpenAccordionItems(["task", "context"]);
     setIsCanvasEmpty(true);
   };
-  const handleUploadButtonClick = () => {
-    if (isLoadingAI) return;
-    fileInputRef.current?.click();
-  };
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadedImageFile(file);
-      setImagePreviewUrl(URL.createObjectURL(file));
-      setIsCanvasEmpty(false);
-    }
-  };
-  const handleClearUploadedImage = () => {
-    if (isLoadingAI) return;
-    setUploadedImageFile(null);
-    setImagePreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    setIsCanvasEmpty(canvasRef.current?.isEmpty() ?? true);
-  };
+
   const handleSaveInputs = () => {
     // 這裡的檢查雖然在 UI 上已經擋掉，但作為最後防線是好的實踐
     if (!targetUser.trim() || !userNeed.trim()) {
@@ -462,10 +435,9 @@ export default function Home() {
       setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
       setSketchCount((prev) => prev + 1);
 
-      // Clear canvas and uploaded image on successful feedback
+      // Clear canvas on successful feedback
       if (feedback && !feedback.analysis?.error) {
         canvasRef.current?.clearCanvas();
-        handleClearUploadedImage();
       }
     } catch (error) {
       console.error("處理失敗：", error);
@@ -475,108 +447,7 @@ export default function Home() {
     }
   };
 
-  const handleSendUploadedImageToAI = async () => {
-    if (feedbackContainerRef.current) {
-      feedbackContainerRef.current.scrollTop = 0;
-    }
-    if (!isLoggedIn) return;
-    if (!uploadedImageFile) {
-      alert("沒有已上傳的圖片。");
-      return;
-    }
-    if (!isSaved) {
-      alert("請先點擊「儲存」按鈕來鎖定您的目標受眾與需求。");
-      return;
-    }
-    setIsLoadingAI(true);
-    const previousPersonas = feedbackHistory
-      .map((record) => {
-        const analysis = record.feedback?.analysis;
-        if (
-          analysis?.defined_target_user_chinese &&
-          analysis?.defined_user_need_chinese
-        ) {
-          return {
-            user: analysis.defined_target_user_chinese,
-            need: analysis.defined_user_need_chinese,
-          };
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    const formData = new FormData();
-    formData.append("taskDescription", prompt);
-    formData.append("image", uploadedImageFile, uploadedImageFile.name);
-    formData.append("feedbackType", selectedMode);
-    formData.append("targetUser", targetUser);
-    formData.append("userNeed", userNeed);
-    if (previousPersonas.length > 0) {
-      formData.append("previousPersonas", JSON.stringify(previousPersonas));
-    }
-    try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) {
-        throw new Error(await res.text());
-      }
-      const data = await res.json();
-      const feedback = data.feedback;
-      const result = await uploadSketchAndFeedback(
-        uploadedImageFile,
-        participantId.trim(),
-        sketchCount,
-        prompt,
-        feedback,
-        selectedMode,
-        targetUser,
-        userNeed
-      );
-      const newFeedbackRecord = {
-        id: result.docId,
-        timestamp: new Date(),
-        taskDescription: prompt,
-        feedback: feedback,
-        feedbackMode: selectedMode,
-        imageUrl: result.userSketchUrl,
-        docId: result.docId,
-      };
-      setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
-
-      // Clear uploaded image and canvas on successful feedback
-      if (feedback && !feedback.analysis?.error) {
-        handleClearUploadedImage();
-        canvasRef.current?.clearCanvas();
-      }
-    } catch (error) {
-      console.error("處理失敗：", error);
-      alert("處理失敗，請重試");
-
-      // 將錯誤資訊加入 feedbackHistory，以便前端顯示錯誤訊息
-      const errorFeedback = {
-        type: "image",
-        suggestions: null,
-        analysis: { error: error.message || "未知錯誤" },
-      };
-      const newFeedbackRecord = {
-        id: `error-${Date.now()}`,
-        timestamp: new Date(),
-        taskDescription: prompt,
-        feedback: errorFeedback,
-        feedbackMode: selectedMode,
-        imageUrl: imagePreviewUrl, // 保留上傳的圖片預覽
-        docId: null,
-      };
-      setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
-    } finally {
-      setIsLoadingAI(false);
-    }
-  };
-
-  const isSendButtonDisabled =
-    isLoadingAI || !isSaved || (!uploadedImageFile && isCanvasEmpty);
+  const isSendButtonDisabled = isLoadingAI || !isSaved || isCanvasEmpty;
 
   const renderFeedbackDetails = (analysis, mode) => {
     if (!analysis || typeof analysis !== "object" || analysis.error) {
@@ -920,7 +791,7 @@ export default function Home() {
                   const record = feedbackHistory[0];
                   const feedbackConfig = FEEDBACK_MODES[record.feedbackMode];
                   return (
-                    <div key={record.docId} className="flex items-start gap-3">
+                    <div key={record.id} className="flex items-start gap-3">
                       <div className="flex-shrink-0">
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
@@ -1048,35 +919,8 @@ export default function Home() {
               brushOptions={brushOptions}
               onChange={updateCanvasEmptyStatus}
             />
-            {imagePreviewUrl && (
-              <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-400 rounded-lg">
-                <Image
-                  src={imagePreviewUrl}
-                  alt="圖片預覽"
-                  width={400}
-                  height={400}
-                  className="max-w-full max-h-full object-contain"
-                />
-                <button
-                  onClick={handleClearUploadedImage}
-                  className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-red-100 transition-colors"
-                  title="清除上傳的圖片"
-                >
-                  <X className="w-5 h-5 text-red-500" />
-                </button>
-                <p className="mt-2 text-sm text-gray-600">
-                  已上傳圖片，將以此圖獲得 AI 回饋。
-                </p>
-              </div>
-            )}
           </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/png, image/jpeg, image/jpg"
-          />
+
           <div className="space-y-4">
             <div className="flex gap-2 flex-wrap">
               <ToggleGroup
@@ -1136,31 +980,9 @@ export default function Home() {
                 <Image src="/trash.svg" alt="Clear" width={16} height={16} />
                 清除
               </Button>
+
               <Button
-                onClick={handleDownload}
-                className="flex items-center gap-1 text-xs"
-              >
-                <Image
-                  src="/download.svg"
-                  alt="Download"
-                  width={16}
-                  height={16}
-                />
-                下載
-              </Button>
-              <Button
-                onClick={handleUploadButtonClick}
-                className="flex items-center gap-1 text-xs"
-              >
-                <Image src="/upload.svg" alt="Upload" width={16} height={16} />
-                上傳
-              </Button>
-              <Button
-                onClick={
-                  uploadedImageFile
-                    ? handleSendUploadedImageToAI
-                    : handleSendToAI
-                }
+                onClick={handleSendToAI}
                 disabled={isSendButtonDisabled}
                 className={`p-3 rounded-md font-medium border transition-colors text-xs flex items-center gap-1 ${
                   // Added flex items-center gap-1
@@ -1177,7 +999,7 @@ export default function Home() {
                 }`}
               >
                 <AiIcon />
-                {isLoadingAI ? "AI 分析中..." : "獲取回饋"}
+                {isLoadingAI ? "分析中..." : "獲取回饋"}
               </Button>
             </div>
           </div>
