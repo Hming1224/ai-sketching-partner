@@ -10,6 +10,8 @@ import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
 import ClientOnly from "@/components/ClientOnly";
 import { X } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import AiIcon from "@/components/icons/AiIcon";
 import HistoryModal from "@/components/HistoryModal"; // 匯入新的 Modal 元件
 import {
   Accordion,
@@ -192,21 +194,28 @@ export default function Home() {
     canvasRef.current?.redo();
   };
 
-  // [修改二] 更新 handleEraserMode 函式，加入儲存與恢復邏輯
-  const handleEraserMode = () => {
+  const handleDrawingModeChange = (newMode) => {
+    if (!newMode) return; // Do nothing if the same button is clicked again to deselect
+
     setBrushOptions((prevOptions) => {
-      if (prevOptions.isEraser) {
-        // 從【橡皮擦】切換回【畫筆】
-        savedEraserSizeRef.current = prevOptions.size;
-        return { ...savedBrushOptionsRef.current, isEraser: false };
-      } else {
-        // 從【畫筆】切換到【橡皮擦】
+      const isSwitchingToEraser = newMode === "eraser";
+
+      if (prevOptions.isEraser === isSwitchingToEraser) {
+        return prevOptions; // No change
+      }
+
+      if (isSwitchingToEraser) {
+        // From draw to eraser
         savedBrushOptionsRef.current = prevOptions;
         return {
           ...prevOptions,
           isEraser: true,
           size: savedEraserSizeRef.current,
         };
+      } else {
+        // From eraser to draw
+        savedEraserSizeRef.current = prevOptions.size;
+        return { ...savedBrushOptionsRef.current, isEraser: false };
       }
     });
   };
@@ -458,7 +467,6 @@ export default function Home() {
         canvasRef.current?.clearCanvas();
         handleClearUploadedImage();
       }
-
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
@@ -863,6 +871,7 @@ export default function Home() {
                     <Button
                       onClick={handleSaveInputs}
                       disabled={!isEditing || isSaveButtonDisabled}
+                      className="text-xs"
                     >
                       儲存
                     </Button>
@@ -976,7 +985,9 @@ export default function Home() {
                               </div>
                             ) : (
                               <div className="mt-2 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="text-sm text-red-700">圖片預覽失敗，請稍後再試。</p>
+                                <p className="text-sm text-red-700">
+                                  圖片預覽失敗，請稍後再試。
+                                </p>
                               </div>
                             )
                           ) : null}
@@ -1068,18 +1079,81 @@ export default function Home() {
           />
           <div className="space-y-4">
             <div className="flex gap-2 flex-wrap">
-              <Button
-                onClick={handleEraserMode}
-                variant={brushOptions.isEraser ? "secondary" : "default"}
+              <ToggleGroup
+                type="single"
+                defaultValue="draw"
+                value={brushOptions.isEraser ? "eraser" : "draw"}
+                onValueChange={handleDrawingModeChange}
+                className="h-9"
               >
-                {brushOptions.isEraser ? "繪圖" : "橡皮擦"}
+                <ToggleGroupItem
+                  value="draw"
+                  aria-label="Toggle draw"
+                  className="px-4 data-[state=on]:bg-black data-[state=on]:!text-white data-[state=on]:rounded-md flex items-center gap-1 text-xs"
+                >
+                  <Image
+                    src="/tool-pencil.svg"
+                    alt="Draw"
+                    width={16}
+                    height={16}
+                    className={brushOptions.isEraser ? "filter invert" : ""}
+                  />
+                  繪圖
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="eraser"
+                  aria-label="Toggle eraser"
+                  className="px-4 data-[state=on]:bg-black data-[state=on]:!text-white data-[state=on]:rounded-md flex items-center gap-1 text-xs"
+                >
+                  <Image
+                    src="/tool-eraser.svg"
+                    alt="Eraser"
+                    width={16}
+                    height={16}
+                    className={!brushOptions.isEraser ? "filter invert" : ""}
+                  />
+                  橡皮擦
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <Button
+                onClick={handleUndo}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Image src="/undo.svg" alt="Undo" width={16} height={16} />
+                返回
               </Button>
-              <Button onClick={handleUndo}>返回</Button>
-              <Button onClick={handleRedo}>重做</Button>
-              <Button onClick={handleClear}>清除畫布</Button>
-              <Button onClick={handleDownload}>下載繪圖</Button>
-              <Button onClick={handleUploadButtonClick} variant="outline">
-                上傳圖片 (臨時)
+              <Button
+                onClick={handleRedo}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Image src="/redo.svg" alt="Redo" width={16} height={16} />
+                重做
+              </Button>
+              <Button
+                onClick={handleClear}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Image src="/trash.svg" alt="Clear" width={16} height={16} />
+                清除
+              </Button>
+              <Button
+                onClick={handleDownload}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Image
+                  src="/download.svg"
+                  alt="Download"
+                  width={16}
+                  height={16}
+                />
+                下載
+              </Button>
+              <Button
+                onClick={handleUploadButtonClick}
+                className="flex items-center gap-1 text-xs"
+              >
+                <Image src="/upload.svg" alt="Upload" width={16} height={16} />
+                上傳
               </Button>
               <Button
                 onClick={
@@ -1088,7 +1162,8 @@ export default function Home() {
                     : handleSendToAI
                 }
                 disabled={isSendButtonDisabled}
-                className={`p-3 rounded-md font-medium border transition-colors ${
+                className={`p-3 rounded-md font-medium border transition-colors text-xs flex items-center gap-1 ${
+                  // Added flex items-center gap-1
                   currentModeConfig
                     ? `${currentModeConfig.bgClass} ${
                         currentModeConfig.borderClass
@@ -1101,6 +1176,7 @@ export default function Home() {
                     : "bg-gray-300 text-gray-700"
                 }`}
               >
+                <AiIcon />
                 {isLoadingAI ? "AI 分析中..." : "獲取回饋"}
               </Button>
             </div>
