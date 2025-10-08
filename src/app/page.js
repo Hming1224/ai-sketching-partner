@@ -40,8 +40,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-blue-700",
     welcomeMessage:
       " 嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的草圖並提供文字建議，您可以將這些想法作為靈感來繪製草圖。",
-    warningMessage:
-      "以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。",
+    AdviceSuggestion: "以下是根據當前設計的建議：",
   },
   "sketch-image": {
     title: "草圖圖像建議",
@@ -53,8 +52,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-purple-700",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會分析您的設計並生成一張新的參考圖像，您可以將這些想法作為靈感來繪製草圖。",
-    warningMessage:
-      "以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。",
+    AdviceSuggestion: "以下是根據當前設計的建議：",
   },
   "task-text": {
     title: "任務文字發想",
@@ -66,8 +64,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-[#005D4B]",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務提供文字想法給你參考，您可以將這些想法作為靈感來繪製草圖。",
-    warningMessage:
-      "以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。",
+    AdviceSuggestion: "以下是根據設計任務的建議：",
   },
   "task-image": {
     title: "任務圖像發想",
@@ -79,8 +76,7 @@ const FEEDBACK_MODES = {
     textColorClass: "text-orange-700",
     welcomeMessage:
       "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務生成一張參考圖像，您可以將這些想法作為靈感來繪製草圖。",
-    warningMessage:
-      "以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。",
+    AdviceSuggestion: "以下是根據設計任務的建議：",
   },
 };
 
@@ -825,7 +821,7 @@ export default function Home() {
                           record.imageUrl && (
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-gray-700 mb-2">
-                                你當前的設計：
+                                當前的設計：
                               </h4>
                               <Image
                                 src={record.imageUrl}
@@ -838,7 +834,7 @@ export default function Home() {
                           )}
                         <div className="mb-3">
                           <h5 className="text-sm font-medium mb-2 text-gray-700">
-                            設計建議：
+                            {feedbackConfig?.AdviceSuggestion}
                           </h5>
                           {record.feedback.type === "image" ? (
                             record.feedback.suggestions ? (
@@ -870,7 +866,7 @@ export default function Home() {
                               record.feedbackMode
                             )}
                           <h5 className="text-xs mt-4 text-red-500">
-                            {currentModeConfig?.warningMessage}
+                            以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。
                           </h5>
                         </div>
                       </div>

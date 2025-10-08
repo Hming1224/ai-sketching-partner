@@ -37,6 +37,12 @@ export async function uploadSketchAndFeedback(
 ) {
   const userSketchUrl = await uploadImage(blob, participantId, sketchCount, 'user_sketch', selectedMode);
 
+  let suggestions_url = feedback.suggestions;
+  if (suggestions_url && suggestions_url.startsWith('data:image')) {
+    const suggestionBlob = await (await fetch(suggestions_url)).blob();
+    suggestions_url = await uploadImage(suggestionBlob, participantId, sketchCount, 'ai_suggestion', selectedMode);
+  }
+
   const docId = `${participantId}_${selectedMode}_${sketchCount}`;
   const feedbackRef = doc(db, "feedback", docId);
 
@@ -44,7 +50,10 @@ export async function uploadSketchAndFeedback(
     participantId,
     sketchCount,
     prompt,
-    feedback,
+    feedback: {
+      ...feedback,
+      suggestions: suggestions_url,
+    },
     selectedMode,
     targetUser,
     userNeed,
