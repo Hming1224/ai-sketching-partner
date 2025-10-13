@@ -90,7 +90,7 @@ export default function Home() {
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
-  const savedEraserSizeRef = useRef(30); // 橡皮擦預設尺寸為 30
+  const savedEraserSizeRef = useRef(20); // 橡皮擦預設尺寸為 30
   const inputFocusStyle = "focus-visible:ring-2 focus-visible:ring-ring";
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
@@ -640,7 +640,7 @@ export default function Home() {
           <div
             className={`border rounded ${currentModeConfig?.bgClass} overflow-hidden`}
           >
-            <AccordionTrigger className="text-lg font-bold px-6">
+            <AccordionTrigger className="text-lg font-bold px-6 hover:no-underline">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center space-x-6">
                   <span>設計任務</span>
@@ -674,7 +674,7 @@ export default function Home() {
                       handleStartNewExperiment();
                     }
                   }}
-                  className="text-xs bg-white hover:bg-gray-50 text-gray-600 px-3 py-1 rounded border transition-colors mr-4"
+                  className="text-xs bg-transparent text-transparent px-3 py-1 rounded transition-colors mr-4"
                 >
                   新受試者
                 </div>
@@ -765,7 +765,7 @@ export default function Home() {
               {feedbackHistory.length > 0 && (
                 <button
                   onClick={handleOpenHistoryModal}
-                  className="text-xs bg-white hover:bg-gray-50 text-gray-600 px-3 py-1 rounded border transition-colors"
+                  className="text-xs bg-transparent text-transparent px-3 py-1 rounded transition-colors"
                 >
                   創作歷程
                 </button>
