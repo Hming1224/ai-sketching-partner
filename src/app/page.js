@@ -90,7 +90,7 @@ export default function Home() {
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
-  const savedEraserSizeRef = useRef(60); // 橡皮擦預設尺寸為 60
+  const savedEraserSizeRef = useRef(30); // 橡皮擦預設尺寸為 30
   const inputFocusStyle = "focus-visible:ring-2 focus-visible:ring-ring";
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const currentModeConfig = FEEDBACK_MODES[selectedMode];
@@ -980,19 +980,7 @@ export default function Home() {
               <Button
                 onClick={handleSendToAI}
                 disabled={isSendButtonDisabled}
-                className={`p-3 rounded-md font-medium border transition-colors text-xs flex items-center gap-1 ${
-                  // Added flex items-center gap-1
-                  currentModeConfig
-                    ? `${currentModeConfig.bgClass} ${
-                        currentModeConfig.borderClass
-                      } ${
-                        currentModeConfig.textColorClass
-                      } hover:bg-${currentModeConfig.bgClass.replace(
-                        "-50",
-                        "-100"
-                      )}`
-                    : "bg-gray-300 text-gray-700"
-                }`}
+                className="p-3 rounded-md font-medium transition-colors text-xs flex items-center gap-1 bg-black text-white hover:bg-gray-800 disabled:bg-gray-300"
               >
                 <AiIcon />
                 {isLoadingAI ? "分析中..." : "獲取回饋"}
