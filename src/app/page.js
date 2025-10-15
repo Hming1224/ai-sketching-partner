@@ -6,7 +6,7 @@ import BrushSettingsPanel from "@/components/BrushSettingsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { uploadSketchAndFeedback, createParticipantInfo } from "@/lib/upload";
+import { uploadSketchAndFeedback, createParticipantInfo, getParticipantData } from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
 import ClientOnly from "@/components/ClientOnly";
 import { X } from "lucide-react";
@@ -87,6 +87,7 @@ export default function Home() {
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [brushOptions, setBrushOptions] = useState(DEFAULT_BRUSH_OPTIONS);
   const [sketchCount, setSketchCount] = useState(1);
+  const [drawingStartTime, setDrawingStartTime] = useState(null);
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
@@ -219,6 +220,7 @@ export default function Home() {
     if (!confirmed) return;
     canvasRef.current?.clearCanvas();
     setIsCanvasEmpty(true);
+    setDrawingStartTime(new Date());
   };
 
   const handleParticipantLogin = async () => {
@@ -226,12 +228,42 @@ export default function Home() {
       alert("請輸入受試者 ID");
       return;
     }
-    if (!selectedMode) {
-      alert("請選擇 AI 回饋模式");
-      return;
+
+    const pid = participantId.trim();
+    const existingData = await getParticipantData(pid);
+
+    if (existingData && existingData.feedbackHistory.length > 0) {
+      const resume = confirm("偵測到您有未完成的實驗，要繼續嗎？");
+      if (resume) {
+        // Restore session
+        setSelectedMode(existingData.selectedMode);
+        setFeedbackHistory(existingData.feedbackHistory);
+        setSketchCount(existingData.feedbackHistory.length + 1);
+
+        const latestRecord = existingData.feedbackHistory[existingData.feedbackHistory.length - 1]; // History is sorted asc
+        if (latestRecord.targetUser && latestRecord.userNeed) {
+          setTargetUser(latestRecord.targetUser);
+          setUserNeed(latestRecord.userNeed);
+          setIsSaved(true);
+          setOpenAccordionItems((prev) => prev.filter((item) => item !== "task"));
+        }
+        
+        setIsLoggedIn(true);
+        setDrawingStartTime(new Date()); // Start new timer for the current drawing
+        return;
+      } else {
+        alert("請使用新的受試者 ID 開始一個新的實驗。");
+        return;
+      }
     }
+
+    if (!selectedMode) {
+        alert("請選擇 AI 回饋模式");
+        return;
+    }
+
     try {
-      await createParticipantInfo(participantId.trim(), selectedMode);
+      await createParticipantInfo(pid, selectedMode);
       setIsLoggedIn(true);
       setBrushOptions({ ...DEFAULT_BRUSH_OPTIONS });
       setFeedbackHistory([]);
@@ -239,6 +271,7 @@ export default function Home() {
       if (canvasRef.current?.clearCanvas) {
         canvasRef.current.clearCanvas();
       }
+      setDrawingStartTime(new Date());
     } catch (error) {
       alert("系統設定失敗，請重試");
     }
@@ -260,6 +293,7 @@ export default function Home() {
     setInitialFeedbackState("hidden");
     setOpenAccordionItems(["task", "context"]);
     setIsCanvasEmpty(true);
+    setDrawingStartTime(null);
   };
 
   const handleSaveInputs = () => {
@@ -415,25 +449,32 @@ export default function Home() {
         feedback,
         selectedMode,
         targetUser,
-        userNeed
+        userNeed,
+        drawingStartTime
       );
 
       const newFeedbackRecord = {
         id: result.docId,
-        timestamp: new Date(),
-        taskDescription: prompt,
+        participantId: participantId.trim(),
+        sketchCount: sketchCount,
+        prompt: prompt,
         feedback: feedback,
-        feedbackMode: selectedMode,
-        imageUrl: result.userSketchUrl,
-        docId: result.docId,
+        selectedMode: selectedMode,
+        targetUser: targetUser,
+        userNeed: userNeed,
+        userSketchUrl: result.userSketchUrl,
+        drawingStartTime: drawingStartTime,
+        timestamp: new Date(),
+        createdAt: new Date(), // Approx. value, server value is the source of truth
       };
 
-      setFeedbackHistory((prev) => [newFeedbackRecord, ...prev]);
+      setFeedbackHistory((prev) => [...prev, newFeedbackRecord]);
       setSketchCount((prev) => prev + 1);
 
       // Clear canvas on successful feedback
       if (feedback && !feedback.analysis?.error) {
         canvasRef.current?.clearCanvas();
+        setDrawingStartTime(new Date());
       }
     } catch (error) {
       console.error("處理失敗：", error);
@@ -508,6 +549,8 @@ export default function Home() {
               </div>
             </div>
           );
+        } else {
+          return <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(analysis, null, 2)}</pre>;
         }
       } else {
         // Fallback for sketch-text
@@ -540,6 +583,8 @@ export default function Home() {
               </div>
             </div>
           );
+        } else {
+          return <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(analysis, null, 2)}</pre>;
         }
       }
     }
@@ -620,7 +665,7 @@ export default function Home() {
             </div>
             <Button
               onClick={handleParticipantLogin}
-              disabled={!participantId.trim() || !selectedMode}
+              disabled={!participantId.trim()}
               className="w-full text-lg bg-black text-white py-6 rounded-md font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               開始實驗
@@ -646,6 +691,11 @@ export default function Home() {
                   <span>設計任務</span>
                   {isSaved && !openAccordionItems.includes("task") && (
                     <div className="flex items-center gap-6 text-sm font-normal">
+                      <div className="flex items-baseline gap-2">
+                        <p className="font-medium text-gray-700 whitespace-nowrap">
+                          環境：長照中心
+                        </p>
+                      </div>
                       <div className="flex items-baseline gap-2">
                         <p className="font-medium text-gray-700 whitespace-nowrap">
                           目標受眾：
@@ -674,7 +724,7 @@ export default function Home() {
                       handleStartNewExperiment();
                     }
                   }}
-                  className="text-xs bg-transparent text-transparent px-3 py-1 rounded transition-colors mr-4"
+                  className="text-xs bg-transparent text-transparent px-3 py-1 rounded transition-colors mr-12"
                 >
                   新受試者
                 </div>
@@ -784,8 +834,8 @@ export default function Home() {
             )}
             {feedbackHistory.length > 0
               ? (() => {
-                  const record = feedbackHistory[0];
-                  const feedbackConfig = FEEDBACK_MODES[record.feedbackMode];
+                  const record = feedbackHistory[feedbackHistory.length - 1];
+                  const feedbackConfig = FEEDBACK_MODES[record.selectedMode];
                   return (
                     <div key={record.id} className="flex items-start gap-3">
                       <div className="flex-shrink-0">
@@ -816,15 +866,15 @@ export default function Home() {
                             </ClientOnly>
                           </span>
                         </div>
-                        {(record.feedbackMode === "sketch-text" ||
-                          record.feedbackMode === "sketch-image") &&
-                          record.imageUrl && (
+                        {(record.selectedMode === "sketch-text" ||
+                          record.selectedMode === "sketch-image") &&
+                          record.userSketchUrl && (
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-gray-700 mb-2">
                                 當前的設計：
                               </h4>
                               <Image
-                                src={record.imageUrl}
+                                src={record.userSketchUrl}
                                 alt="受試者草圖"
                                 width={200}
                                 height={200}
@@ -858,12 +908,12 @@ export default function Home() {
                               </div>
                             )
                           ) : null}
-                          {(record.feedbackMode === "sketch-text" ||
-                            record.feedbackMode === "task-text") &&
+                          {(record.selectedMode === "sketch-text" ||
+                            record.selectedMode === "task-text") &&
                             record.feedback.analysis &&
                             renderFeedbackDetails(
                               record.feedback.analysis,
-                              record.feedbackMode
+                              record.selectedMode
                             )}
                           <h5 className="text-xs mt-4 text-red-500">
                             以上建議僅供參考，請照自己的意思創作，在右邊畫下一張草圖。
@@ -997,6 +1047,8 @@ export default function Home() {
         onNext={handleHistoryNext}
         onPrev={handleHistoryPrev}
         renderFeedbackDetails={renderFeedbackDetails}
+        targetAudience={targetUser}
+        userNeeds={userNeed}
       />
     </div>
   );

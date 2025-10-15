@@ -1,6 +1,6 @@
 
 import { db, storage } from "./firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // I will keep uploadImage since uploadSketchAndFeedback depends on it.
@@ -33,7 +33,8 @@ export async function uploadSketchAndFeedback(
   feedback,
   selectedMode,
   targetUser,
-  userNeed
+  userNeed,
+  drawingStartTime
 ) {
   const userSketchUrl = await uploadImage(blob, participantId, sketchCount, 'user_sketch', selectedMode);
 
@@ -58,6 +59,7 @@ export async function uploadSketchAndFeedback(
     targetUser,
     userNeed,
     userSketchUrl,
+    drawingStartTime,
     createdAt: serverTimestamp(),
   });
 
@@ -73,4 +75,47 @@ export async function createParticipantInfo(participantId, selectedMode) {
     selectedMode: selectedMode,
     createdAt: serverTimestamp(),
   });
+}
+
+export async function getParticipantData(participantId) {
+  if (!participantId) return null;
+
+  const participantRef = doc(db, "participants", participantId);
+  const participantSnap = await getDoc(participantRef);
+
+  if (!participantSnap.exists()) {
+    return null; // Participant not found
+  }
+
+  const participantData = participantSnap.data();
+
+  const feedbackQuery = query(
+    collection(db, "feedback"),
+    where("participantId", "==", participantId),
+    orderBy("sketchCount", "asc") // Get the oldest first
+  );
+
+  const feedbackSnap = await getDocs(feedbackQuery);
+  const feedbackHistory = feedbackSnap.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      participantId: data.participantId,
+      sketchCount: data.sketchCount,
+      prompt: data.prompt,
+      feedback: data.feedback,
+      selectedMode: data.selectedMode,
+      targetUser: data.targetUser,
+      userNeed: data.userNeed,
+      userSketchUrl: data.userSketchUrl,
+      drawingStartTime: data.drawingStartTime?.toDate(),
+      timestamp: data.createdAt?.toDate() || new Date(),
+      createdAt: data.createdAt?.toDate() || new Date(),
+    };
+  });
+
+  return {
+    selectedMode: participantData.selectedMode,
+    feedbackHistory: feedbackHistory,
+  };
 }

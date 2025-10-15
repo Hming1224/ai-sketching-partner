@@ -7,29 +7,8 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 1451ms
+ ✓ Ready in 1162ms
  ○ Compiling / ...
- ✓ Compiled / in 1414ms (797 modules)
- GET / 200 in 1803ms
- ✓ Compiled in 312ms (337 modules)
- ✓ Compiled /favicon.ico in 103ms (492 modules)
- GET /favicon.ico 200 in 148ms
- GET / 200 in 129ms
- ⚠ Cross origin request detected from 172.20.10.4 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
- GET /favicon.ico 200 in 57ms
- GET /favicon.ico 200 in 51ms
- GET /favicon.ico 200 in 49ms
- ✓ Compiled /_not-found in 151ms (818 modules)
- GET /apple-touch-icon-precomposed.png 404 in 201ms
- GET /apple-touch-icon.png 404 in 190ms
- ✓ Compiled in 315ms (797 modules)
- GET / 200 in 159ms
- ✓ Compiled in 399ms (797 modules)
- ✓ Compiled in 346ms (797 modules)
- ✓ Compiled in 145ms (797 modules)
- ✓ Compiled in 188ms (797 modules)
- ✓ Compiled in 142ms (797 modules)
- ✓ Compiled in 310ms (797 modules)
- ✓ Compiled /api/feedback in 232ms (489 modules)
- POST /api/feedback 200 in 20798ms
+ ✓ Compiled / in 1255ms (797 modules)
+ GET / 200 in 1589ms
+ ✓ Compiled in 293ms (337 modules)
