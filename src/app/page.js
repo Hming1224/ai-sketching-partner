@@ -87,7 +87,12 @@ export default function Home() {
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [brushOptions, setBrushOptions] = useState(DEFAULT_BRUSH_OPTIONS);
   const [sketchCount, setSketchCount] = useState(1);
+  const [feedbackDisplayTime, setFeedbackDisplayTime] = useState(null);
   const [drawingStartTime, setDrawingStartTime] = useState(null);
+  const [toolChangesCount, setToolChangesCount] = useState(0);
+  const [previousFeedbackCreatedAt, setPreviousFeedbackCreatedAt] = useState(null);
+  const [feedbackResponseTime, setFeedbackResponseTime] = useState(null);
+  const [initialFeedbackDisplayTime, setInitialFeedbackDisplayTime] = useState(null);
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
@@ -182,10 +187,12 @@ export default function Home() {
   const handleUndo = () => {
     if (isLoadingAI) return;
     canvasRef.current?.undo();
+    setToolChangesCount(prev => prev + 1);
   };
   const handleRedo = () => {
     if (isLoadingAI) return;
     canvasRef.current?.redo();
+    setToolChangesCount(prev => prev + 1);
   };
 
   const handleDrawingModeChange = (newMode) => {
@@ -197,6 +204,7 @@ export default function Home() {
       if (prevOptions.isEraser === isSwitchingToEraser) {
         return prevOptions; // No change
       }
+      setToolChangesCount(prev => prev + 1);
 
       if (isSwitchingToEraser) {
         // From draw to eraser
@@ -220,7 +228,7 @@ export default function Home() {
     if (!confirmed) return;
     canvasRef.current?.clearCanvas();
     setIsCanvasEmpty(true);
-    setDrawingStartTime(new Date());
+    setToolChangesCount(prev => prev + 1);
   };
 
   const handleParticipantLogin = async () => {
@@ -249,7 +257,9 @@ export default function Home() {
         }
         
         setIsLoggedIn(true);
-        setDrawingStartTime(new Date()); // Start new timer for the current drawing
+        setFeedbackDisplayTime(new Date()); // Start new timer for the current drawing
+        setToolChangesCount(0);
+        setPreviousFeedbackCreatedAt(latestRecord.createdAt);
         return;
       } else {
         alert("請使用新的受試者 ID 開始一個新的實驗。");
@@ -271,7 +281,9 @@ export default function Home() {
       if (canvasRef.current?.clearCanvas) {
         canvasRef.current.clearCanvas();
       }
-      setDrawingStartTime(new Date());
+      setFeedbackDisplayTime(new Date());
+      setToolChangesCount(0);
+      setPreviousFeedbackCreatedAt(null);
     } catch (error) {
       alert("系統設定失敗，請重試");
     }
@@ -293,7 +305,10 @@ export default function Home() {
     setInitialFeedbackState("hidden");
     setOpenAccordionItems(["task", "context"]);
     setIsCanvasEmpty(true);
-    setDrawingStartTime(null);
+    setFeedbackDisplayTime(null);
+    setToolChangesCount(0);
+    setPreviousFeedbackCreatedAt(null);
+    setInitialFeedbackDisplayTime(null);
   };
 
   const handleSaveInputs = () => {
@@ -308,9 +323,10 @@ export default function Home() {
       setIsEditing(false);
       setOpenAccordionItems((prev) => prev.filter((item) => item !== "task"));
       setInitialFeedbackState("loading");
+      setInitialFeedbackDisplayTime(new Date());
       setTimeout(() => {
-        setInitialFeedbackState("visible");
-      }, 2000);
+                  setInitialFeedbackState("visible");
+                  setInitialFeedbackDisplayTime(new Date());      }, 2000);
     }
   };
 
@@ -430,10 +446,14 @@ export default function Home() {
         formData.append("previousPersonas", JSON.stringify(previousPersonas));
       }
 
+      const apiCallStartTime = new Date();
       const res = await fetch("/api/feedback", {
         method: "POST",
         body: formData,
       });
+      const apiCallEndTime = new Date();
+      const responseDuration = apiCallEndTime.getTime() - apiCallStartTime.getTime();
+      setFeedbackResponseTime(responseDuration);
 
       if (!res.ok) {
         throw new Error(await res.text());
@@ -441,6 +461,15 @@ export default function Home() {
 
       const data = await res.json();
       const feedback = data.feedback;
+
+      const displayDuration = drawingStartTime
+        ? drawingStartTime.getTime() - feedbackDisplayTime.getTime()
+        : null;
+
+      const drawingDuration = drawingStartTime
+        ? apiCallEndTime.getTime() - drawingStartTime.getTime()
+        : null;
+
       const result = await uploadSketchAndFeedback(
         blob,
         participantId.trim(),
@@ -450,7 +479,11 @@ export default function Home() {
         selectedMode,
         targetUser,
         userNeed,
-        drawingStartTime
+        drawingStartTime, // Pass the REAL drawing start time
+        toolChangesCount,
+        responseDuration,
+        displayDuration,
+        drawingDuration
       );
 
       const newFeedbackRecord = {
@@ -464,17 +497,22 @@ export default function Home() {
         userNeed: userNeed,
         userSketchUrl: result.userSketchUrl,
         drawingStartTime: drawingStartTime,
+        drawingDuration: drawingDuration,
         timestamp: new Date(),
-        createdAt: new Date(), // Approx. value, server value is the source of truth
+        createdAt: apiCallEndTime, // Use the actual end time of the API call as createdAt
       };
 
       setFeedbackHistory((prev) => [...prev, newFeedbackRecord]);
       setSketchCount((prev) => prev + 1);
+      setToolChangesCount(0);
+      setPreviousFeedbackCreatedAt(apiCallEndTime);
 
-      // Clear canvas on successful feedback
+      // Clear canvas and reset for next drawing
       if (feedback && !feedback.analysis?.error) {
         canvasRef.current?.clearCanvas();
-        setDrawingStartTime(new Date());
+        canvasRef.current?.resetDrawingState(); // Reset the flag in CanvasArea
+        setDrawingStartTime(null); // Reset the drawing start time for the next sketch
+        setFeedbackDisplayTime(new Date()); // Set the display time for the new feedback
       }
     } catch (error) {
       console.error("處理失敗：", error);
@@ -964,6 +1002,9 @@ export default function Home() {
               ref={canvasRef}
               brushOptions={brushOptions}
               onChange={updateCanvasEmptyStatus}
+              onDrawStart={() => {
+                if (!drawingStartTime) setDrawingStartTime(new Date());
+              }}
             />
           </div>
 

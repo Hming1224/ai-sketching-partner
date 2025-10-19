@@ -34,7 +34,11 @@ export async function uploadSketchAndFeedback(
   selectedMode,
   targetUser,
   userNeed,
-  drawingStartTime
+  drawingStartTime,
+  toolChangesCount,
+  feedbackResponseTime,
+  feedbackDisplayDuration,
+  drawingDuration
 ) {
   const userSketchUrl = await uploadImage(blob, participantId, sketchCount, 'user_sketch', selectedMode);
 
@@ -60,6 +64,10 @@ export async function uploadSketchAndFeedback(
     userNeed,
     userSketchUrl,
     drawingStartTime,
+    toolChangesCount,
+    feedbackResponseTime,
+    feedbackDisplayDuration,
+    drawingDuration,
     createdAt: serverTimestamp(),
   });
 
@@ -109,6 +117,10 @@ export async function getParticipantData(participantId) {
       userNeed: data.userNeed,
       userSketchUrl: data.userSketchUrl,
       drawingStartTime: data.drawingStartTime?.toDate(),
+      toolChangesCount: data.toolChangesCount,
+      feedbackResponseTime: data.feedbackResponseTime,
+      feedbackDisplayDuration: data.feedbackDisplayDuration,
+      drawingDuration: data.drawingDuration,
       timestamp: data.createdAt?.toDate() || new Date(),
       createdAt: data.createdAt?.toDate() || new Date(),
     };

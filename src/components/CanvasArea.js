@@ -23,12 +23,13 @@ function throttle(callback, delay) {
   };
 }
 
-const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
+const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart }, ref) => {
   const mainCanvasRef = useRef(null);
   const drawingCanvasRef = useRef(null);
   const [strokes, setStrokes] = useState([]);
   const [activeStroke, setActiveStroke] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [hasDrawingStarted, setHasDrawingStarted] = useState(false);
 
   const [history, setHistory] = useState([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -106,6 +107,12 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
   const handlePointerDown = useCallback(
     (e) => {
       if (e.button !== 0 || e.pointerType === 'touch') return;
+
+      if (!hasDrawingStarted) {
+        onDrawStart?.();
+        setHasDrawingStarted(true);
+      }
+
       setIsDrawing(true);
       const { x, y } = getCanvasPosition(e);
 
@@ -220,6 +227,9 @@ const CanvasArea = forwardRef(({ brushOptions, onChange }, ref) => {
     resizeCanvas: resizeCanvases,
     addChangeListener: (listener) => {},
     removeChangeListener: (listener) => {},
+    resetDrawingState: () => {
+      setHasDrawingStarted(false);
+    },
   }));
 
 
