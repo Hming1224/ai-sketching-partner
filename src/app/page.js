@@ -6,7 +6,11 @@ import BrushSettingsPanel from "@/components/BrushSettingsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { uploadSketchAndFeedback, createParticipantInfo, getParticipantData } from "@/lib/upload";
+import {
+  uploadSketchAndFeedback,
+  createParticipantInfo,
+  getParticipantData,
+} from "@/lib/upload";
 import AILoadingIndicator from "@/components/AILoadingIndicator";
 import ClientOnly from "@/components/ClientOnly";
 import { X } from "lucide-react";
@@ -63,7 +67,7 @@ const FEEDBACK_MODES = {
     dotBg: "bg-[#00C59F]",
     textColorClass: "text-[#005D4B]",
     welcomeMessage:
-      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務提供文字想法給你參考，您可以將這些想法作為靈感來繪製草圖。",
+      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我將根據您的設計任務提供一些想法給您參考，這些想法可能來自不同的受眾或情境，但它們與您正在做的設計任務有關。您可以將這些文字作為靈感或新的思考方向來繪製下一張草圖。",
     AdviceSuggestion: "以下是根據設計任務的建議：",
   },
   "task-image": {
@@ -75,7 +79,7 @@ const FEEDBACK_MODES = {
     dotBg: "bg-orange-400",
     textColorClass: "text-orange-700",
     welcomeMessage:
-      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我就會根據設計任務生成一張參考圖像，您可以將這些想法作為靈感來繪製草圖。",
+      "嗨！我是您的草圖協作夥伴，以下是一張設計範例圖片，圖片僅供參考，希望能給您些想法，您不必照這張圖片繪製。重要的是，能夠幫助您想出更多的創意。完成之後記得點擊「獲取回饋」按鈕，我將根據您的設計任務生成一張圖像給您參考，這張圖像可能來自不同的受眾或情境，但它與您正在做的設計任務有關。您可以將這張圖像作為靈感或新的思考方向來繪製下一張草圖。",
     AdviceSuggestion: "以下是根據設計任務的建議：",
   },
 };
@@ -90,9 +94,11 @@ export default function Home() {
   const [feedbackDisplayTime, setFeedbackDisplayTime] = useState(null);
   const [drawingStartTime, setDrawingStartTime] = useState(null);
   const [toolChangesCount, setToolChangesCount] = useState(0);
-  const [previousFeedbackCreatedAt, setPreviousFeedbackCreatedAt] = useState(null);
+  const [previousFeedbackCreatedAt, setPreviousFeedbackCreatedAt] =
+    useState(null);
   const [feedbackResponseTime, setFeedbackResponseTime] = useState(null);
-  const [initialFeedbackDisplayTime, setInitialFeedbackDisplayTime] = useState(null);
+  const [initialFeedbackDisplayTime, setInitialFeedbackDisplayTime] =
+    useState(null);
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
@@ -187,12 +193,12 @@ export default function Home() {
   const handleUndo = () => {
     if (isLoadingAI) return;
     canvasRef.current?.undo();
-    setToolChangesCount(prev => prev + 1);
+    setToolChangesCount((prev) => prev + 1);
   };
   const handleRedo = () => {
     if (isLoadingAI) return;
     canvasRef.current?.redo();
-    setToolChangesCount(prev => prev + 1);
+    setToolChangesCount((prev) => prev + 1);
   };
 
   const handleDrawingModeChange = (newMode) => {
@@ -204,7 +210,7 @@ export default function Home() {
       if (prevOptions.isEraser === isSwitchingToEraser) {
         return prevOptions; // No change
       }
-      setToolChangesCount(prev => prev + 1);
+      setToolChangesCount((prev) => prev + 1);
 
       if (isSwitchingToEraser) {
         // From draw to eraser
@@ -228,7 +234,7 @@ export default function Home() {
     if (!confirmed) return;
     canvasRef.current?.clearCanvas();
     setIsCanvasEmpty(true);
-    setToolChangesCount(prev => prev + 1);
+    setToolChangesCount((prev) => prev + 1);
   };
 
   const handleParticipantLogin = async () => {
@@ -248,14 +254,17 @@ export default function Home() {
         setFeedbackHistory(existingData.feedbackHistory);
         setSketchCount(existingData.feedbackHistory.length + 1);
 
-        const latestRecord = existingData.feedbackHistory[existingData.feedbackHistory.length - 1]; // History is sorted asc
+        const latestRecord =
+          existingData.feedbackHistory[existingData.feedbackHistory.length - 1]; // History is sorted asc
         if (latestRecord.targetUser && latestRecord.userNeed) {
           setTargetUser(latestRecord.targetUser);
           setUserNeed(latestRecord.userNeed);
           setIsSaved(true);
-          setOpenAccordionItems((prev) => prev.filter((item) => item !== "task"));
+          setOpenAccordionItems((prev) =>
+            prev.filter((item) => item !== "task")
+          );
         }
-        
+
         setIsLoggedIn(true);
         setFeedbackDisplayTime(new Date()); // Start new timer for the current drawing
         setToolChangesCount(0);
@@ -268,8 +277,8 @@ export default function Home() {
     }
 
     if (!selectedMode) {
-        alert("請選擇 AI 回饋模式");
-        return;
+      alert("請選擇 AI 回饋模式");
+      return;
     }
 
     try {
@@ -325,8 +334,9 @@ export default function Home() {
       setInitialFeedbackState("loading");
       setInitialFeedbackDisplayTime(new Date());
       setTimeout(() => {
-                  setInitialFeedbackState("visible");
-                  setInitialFeedbackDisplayTime(new Date());      }, 2000);
+        setInitialFeedbackState("visible");
+        setInitialFeedbackDisplayTime(new Date());
+      }, 2000);
     }
   };
 
@@ -436,6 +446,10 @@ export default function Home() {
         })
         .filter(Boolean);
 
+      const previousFeedbackText = feedbackHistory
+        .map((record) => record.feedback?.analysis?.narrative_feedback_chinese)
+        .filter(Boolean);
+
       const formData = new FormData();
       formData.append("taskDescription", prompt);
       formData.append("image", blob, "sketch.png");
@@ -445,6 +459,12 @@ export default function Home() {
       if (previousPersonas.length > 0) {
         formData.append("previousPersonas", JSON.stringify(previousPersonas));
       }
+      if (previousFeedbackText.length > 0) {
+        formData.append(
+          "previousFeedbackText",
+          JSON.stringify(previousFeedbackText)
+        );
+      }
 
       const apiCallStartTime = new Date();
       const res = await fetch("/api/feedback", {
@@ -452,7 +472,8 @@ export default function Home() {
         body: formData,
       });
       const apiCallEndTime = new Date();
-      const responseDuration = apiCallEndTime.getTime() - apiCallStartTime.getTime();
+      const responseDuration =
+        apiCallEndTime.getTime() - apiCallStartTime.getTime();
       setFeedbackResponseTime(responseDuration);
 
       if (!res.ok) {
@@ -588,7 +609,11 @@ export default function Home() {
             </div>
           );
         } else {
-          return <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(analysis, null, 2)}</pre>;
+          return (
+            <pre className="text-xs whitespace-pre-wrap">
+              {JSON.stringify(analysis, null, 2)}
+            </pre>
+          );
         }
       } else {
         // Fallback for sketch-text
@@ -622,7 +647,11 @@ export default function Home() {
             </div>
           );
         } else {
-          return <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(analysis, null, 2)}</pre>;
+          return (
+            <pre className="text-xs whitespace-pre-wrap">
+              {JSON.stringify(analysis, null, 2)}
+            </pre>
+          );
         }
       }
     }

@@ -31,8 +31,8 @@ export async function POST(req) {
     let feedback;
     let aiIdea = {};
 
-    const sharedIdeationPrompt_sketch = `You are a creative director at a world-class design studio, acting as a collaborative design partner.
-          Your primary task is not to describe the user's sketch, but to use it as inspiration to generate a **new, more abstract, and inspirational conceptual direction**.
+    const sharedIdeationPrompt_sketch = `You are a kind and experienced design professor guiding a student. Your goal is to offer insightful observations to help them see new possibilities in their work.
+          Your primary task is not to describe the user's sketch, but to use it as inspiration to generate a **clear, actionable, and inspirational conceptual direction**.
 
           **Context:**
           - The user's sketch and design context is for: "${taskDescription}".
@@ -40,21 +40,24 @@ export async function POST(req) {
           - ${userNeed ? `Key User Need: ${userNeed}` : ""}
 
           **Your two-step task, in Traditional Chinese:**
-          1.  **Step 1: Generate Conceptual Building Blocks.** Based on the user's sketch, generate three new, abstract concepts for its potential evolution. These concepts are your suggestions.
-          2.  **Step 2: Synthesize into an Inspirational Narrative.** Weave the three concepts you just generated in Step 1 into a single, flowing paragraph. This paragraph is your **constructive suggestion** for the user's next iteration.
+          1.  **Step 1: Generate Distinct Building Blocks.** Based on the user's sketch, generate three **distinct and different** new, concrete concepts for its potential evolution.
+          2.  **Step 2: Synthesize into a Constructive Narrative.** Weave the three concepts you just generated in Step 1 into a single, flowing paragraph. This paragraph is your **constructive suggestion** for the user's next iteration.
 
           **IMPORTANT RULES:**
-          - Use rich, descriptive adjectives focusing on form, texture, and ergonomics.
-          - Be analytical, conceptual, and forward-looking. AVOID overly literary or metaphorical language.
+          - Provide constructive feedback with appropriate and moderate encouragement. Avoid excessive praise.
+          - Each of the three concepts (structure, form, materiality) must be distinct and explore a different direction.
+          - Use simple, everyday, and easy-to-understand adjectives focusing on form, texture, and ergonomics. (e.g., instead of 'volumetric', say 'full and rounded'; instead of 'tectonic', say 'clearly structured').
+          - Be insightful and practical. AVOID overly abstract, academic, or metaphorical language.
+          - 請使用口語、白話、親切自然的台灣正體中文來提供建議，就像在和設計系的同學輕鬆地對話一樣。
           - DO NOT provide any color-related suggestions.
           - DO NOT use Markdown syntax, titles, or lists in your response.
 
           Respond ONLY with a valid JSON object in the following format:
           {
-            "concept_structure_chinese": "A **suggested evolution** for the chair's supportive and enclosing quality in Traditional Chinese.",
-            "concept_form_chinese": "A **new direction** for the abstract geometric forms and their relationships in Traditional Chinese.",
-            "concept_materiality_chinese": "An **inspirational idea** for the sensory experience of the materials in Traditional Chinese.",
-            "narrative_feedback_chinese": "A **constructive suggestion** that synthesizes the three concepts above into a single, forward-looking paragraph of approximately 200 characters in Traditional Chinese. This should guide the user on how they could evolve their design."
+            "concept_structure_chinese": "A **concrete suggestion** for the chair's supportive quality, using simple adjectives.",
+            "concept_form_chinese": "A **clear new direction** for the shapes and their relationships, using simple adjectives.",
+            "concept_materiality_chinese": "An **easy-to-imagine idea** for the sensory experience of the materials, using simple adjectives.",
+            "narrative_feedback_chinese": "A **constructive and insightful suggestion** that synthesizes the three concepts above into a single, forward-looking paragraph of approximately 200 characters in Traditional Chinese. This should guide the user on how they could evolve their design."
           }`;
 
     const sharedIdeationPrompt_task = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
@@ -70,6 +73,7 @@ export async function POST(req) {
             defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 20 characters.**
 
           Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+          - 請使用口語、白話、親切自然的台灣正體中文來提供建議，就像在和設計系的學弟妹輕鬆地對話一樣。避免生硬、學術或過於抽象的詞彙。
           - DO NOT provide any color-related suggestions.
           
           Respond ONLY with a valid JSON object in the following format:
@@ -172,7 +176,7 @@ export async function POST(req) {
             "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the new user in Traditional Chinese.",
             "concept_form_chinese": "A description of the abstract geometric forms, tailored to the new user in Traditional Chinese.",
             "concept_materiality_chinese": "A sensory description of the materials, tailored to the new user in Traditional Chinese.",
-            "narrative_feedback_chinese": "A single, flowing paragraph in Traditional Chinese (approx. 200 characters). It MUST start with the EXACT phrase: '我設定的目標受眾是 [The user you just invented], 他們的需求是 [The need you just identified]。根據以上資訊，我們可以從幾個方向來發想，' and then continue by proposing new, innovative solutions based on the Design DNA. Be descriptive and imaginative; DO NOT use lists or titles."
+            "narrative_feedback_chinese": "A single, flowing paragraph in Traditional Chinese (approx. 200 characters). It MUST start with the EXACT phrase: '在長照中心的設計任務之下，我想試著從一個不同的角度來切入，給你參考看看。我設定了 [The user you just invented] 這個目標受眾，他們的需求是 [The need you just identified]。基於這個情境，我的想法是...' and then continue by proposing new, innovative solutions based on the Design DNA. Be descriptive and imaginative; DO NOT use lists or titles."
           }`;
       }
 
