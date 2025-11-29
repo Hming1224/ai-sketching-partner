@@ -472,8 +472,7 @@ export default function Home() {
         body: formData,
       });
       const apiCallEndTime = new Date();
-      const responseDuration =
-        apiCallEndTime.getTime() - apiCallStartTime.getTime();
+      const responseDuration = apiCallEndTime.getTime() - apiCallStartTime.getTime();
       setFeedbackResponseTime(responseDuration);
 
       if (!res.ok) {
@@ -483,12 +482,18 @@ export default function Home() {
       const data = await res.json();
       const feedback = data.feedback;
 
-      const displayDuration = drawingStartTime
-        ? drawingStartTime.getTime() - feedbackDisplayTime.getTime()
+      // Defensive fallback for drawingStartTime
+      let finalDrawingStartTime = drawingStartTime;
+      if (!finalDrawingStartTime) {
+        finalDrawingStartTime = apiCallEndTime; // Use submission time as a fallback
+      }
+
+      const displayDuration = feedbackDisplayTime
+        ? finalDrawingStartTime.getTime() - feedbackDisplayTime.getTime()
         : null;
 
-      const drawingDuration = drawingStartTime
-        ? apiCallEndTime.getTime() - drawingStartTime.getTime()
+      const drawingDuration = finalDrawingStartTime
+        ? apiCallEndTime.getTime() - finalDrawingStartTime.getTime()
         : null;
 
       const result = await uploadSketchAndFeedback(
@@ -500,7 +505,7 @@ export default function Home() {
         selectedMode,
         targetUser,
         userNeed,
-        drawingStartTime, // Pass the REAL drawing start time
+        finalDrawingStartTime,
         toolChangesCount,
         responseDuration,
         displayDuration,
@@ -517,10 +522,10 @@ export default function Home() {
         targetUser: targetUser,
         userNeed: userNeed,
         userSketchUrl: result.userSketchUrl,
-        drawingStartTime: drawingStartTime,
+        drawingStartTime: finalDrawingStartTime,
         drawingDuration: drawingDuration,
         timestamp: new Date(),
-        createdAt: apiCallEndTime, // Use the actual end time of the API call as createdAt
+        createdAt: apiCallEndTime,
       };
 
       setFeedbackHistory((prev) => [...prev, newFeedbackRecord]);
@@ -1031,9 +1036,7 @@ export default function Home() {
               ref={canvasRef}
               brushOptions={brushOptions}
               onChange={updateCanvasEmptyStatus}
-              onDrawStart={() => {
-                if (!drawingStartTime) setDrawingStartTime(new Date());
-              }}
+              onDrawStart={() => setDrawingStartTime(new Date())}
             />
           </div>
 

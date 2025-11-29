@@ -7,29 +7,18 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 1601ms
+ ✓ Ready in 2.9s
  ○ Compiling / ...
- ✓ Compiled / in 1276ms (797 modules)
- GET / 200 in 1728ms
- ✓ Compiled in 457ms (337 modules)
- ✓ Compiled /favicon.ico in 128ms (492 modules)
- GET /favicon.ico 200 in 180ms
- ✓ Compiled /api/feedback in 204ms (518 modules)
- POST /api/feedback 200 in 12041ms
- POST /api/feedback 200 in 13128ms
- ✓ Compiled in 356ms (797 modules)
- ✓ Compiled in 142ms (337 modules)
- ✓ Compiled in 99ms (337 modules)
- ✓ Compiled in 177ms (337 modules)
- ✓ Compiled in 133ms (337 modules)
- ✓ Compiled in 142ms (337 modules)
- ✓ Compiled in 139ms (337 modules)
- ✓ Compiled in 147ms (337 modules)
- ✓ Compiled in 172ms (337 modules)
- ✓ Compiled /api/feedback in 112ms (489 modules)
- POST /api/feedback 200 in 11901ms
- POST /api/feedback 200 in 15947ms
- POST /api/feedback 200 in 22701ms
- POST /api/feedback 200 in 21052ms
- POST /api/feedback 200 in 27781ms
- POST /api/feedback 200 in 26806ms
+ ✓ Compiled / in 2s (797 modules)
+ GET / 200 in 2517ms
+ ✓ Compiled in 427ms (337 modules)
+ ✓ Compiled /favicon.ico in 450ms (492 modules)
+ GET /favicon.ico 200 in 522ms
+ GET / 200 in 631ms
+ ✓ Compiled /api/feedback in 388ms (489 modules)
+ POST /api/feedback 200 in 13584ms
+ POST /api/feedback 200 in 13393ms
+ POST /api/feedback 200 in 11956ms
+ POST /api/feedback 200 in 17648ms
+ POST /api/feedback 200 in 18785ms
+ POST /api/feedback 200 in 15944ms
