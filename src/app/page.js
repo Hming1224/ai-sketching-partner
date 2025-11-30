@@ -482,18 +482,12 @@ export default function Home() {
       const data = await res.json();
       const feedback = data.feedback;
 
-      // Defensive fallback for drawingStartTime
-      let finalDrawingStartTime = drawingStartTime;
-      if (!finalDrawingStartTime) {
-        finalDrawingStartTime = apiCallEndTime; // Use submission time as a fallback
-      }
-
-      const displayDuration = feedbackDisplayTime
-        ? finalDrawingStartTime.getTime() - feedbackDisplayTime.getTime()
+      const displayDuration = drawingStartTime
+        ? drawingStartTime.getTime() - feedbackDisplayTime.getTime()
         : null;
 
-      const drawingDuration = finalDrawingStartTime
-        ? apiCallEndTime.getTime() - finalDrawingStartTime.getTime()
+      const drawingDuration = drawingStartTime
+        ? apiCallEndTime.getTime() - drawingStartTime.getTime()
         : null;
 
       const result = await uploadSketchAndFeedback(
@@ -505,7 +499,7 @@ export default function Home() {
         selectedMode,
         targetUser,
         userNeed,
-        finalDrawingStartTime,
+        drawingStartTime,
         toolChangesCount,
         responseDuration,
         displayDuration,
@@ -522,7 +516,7 @@ export default function Home() {
         targetUser: targetUser,
         userNeed: userNeed,
         userSketchUrl: result.userSketchUrl,
-        drawingStartTime: finalDrawingStartTime,
+        drawingStartTime: drawingStartTime,
         drawingDuration: drawingDuration,
         timestamp: new Date(),
         createdAt: apiCallEndTime,

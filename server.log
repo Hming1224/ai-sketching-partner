@@ -7,18 +7,8 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 2.9s
- ○ Compiling / ...
- ✓ Compiled / in 2s (797 modules)
- GET / 200 in 2517ms
- ✓ Compiled in 427ms (337 modules)
- ✓ Compiled /favicon.ico in 450ms (492 modules)
- GET /favicon.ico 200 in 522ms
- GET / 200 in 631ms
- ✓ Compiled /api/feedback in 388ms (489 modules)
- POST /api/feedback 200 in 13584ms
- POST /api/feedback 200 in 13393ms
- POST /api/feedback 200 in 11956ms
- POST /api/feedback 200 in 17648ms
- POST /api/feedback 200 in 18785ms
- POST /api/feedback 200 in 15944ms
+ ✓ Ready in 2.1s
+ ✓ Compiled /api/feedback in 168ms (57 modules)
+ POST /api/feedback 200 in 13267ms
+ POST /api/feedback 200 in 13069ms
+ POST /api/feedback 200 in 16065ms

@@ -51,6 +51,21 @@ export async function uploadSketchAndFeedback(
   const docId = `${participantId}_${selectedMode}_${sketchCount}`;
   const feedbackRef = doc(db, "feedback", docId);
 
+  // --- FINAL DEFENSE LOGIC ---
+  const submissionTime = new Date(); // Use a consistent time for fallback and createdAt
+  let finalDrawingStartTime = drawingStartTime;
+  if (!finalDrawingStartTime) {
+    finalDrawingStartTime = submissionTime;
+  }
+
+  let finalDrawingDuration = drawingDuration;
+  if (finalDrawingDuration === null) {
+    // Recalculate if null, using the (potentially fallback) start time
+    finalDrawingDuration = finalDrawingStartTime
+      ? submissionTime.getTime() - finalDrawingStartTime.getTime()
+      : 0;
+  }
+
   await setDoc(feedbackRef, {
     participantId,
     sketchCount,
@@ -63,11 +78,11 @@ export async function uploadSketchAndFeedback(
     targetUser,
     userNeed,
     userSketchUrl,
-    drawingStartTime,
+    drawingStartTime: finalDrawingStartTime,
     toolChangesCount,
     feedbackResponseTime,
     feedbackDisplayDuration,
-    drawingDuration,
+    drawingDuration: finalDrawingDuration,
     createdAt: serverTimestamp(),
   });
 
