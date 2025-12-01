@@ -24,3 +24,56 @@
  ✓ Compiled /api/feedback in 103ms (489 modules)
  POST /api/feedback 200 in 15191ms
  POST /api/feedback 200 in 16420ms
+   Reload env: .env.local
+ ✓ Compiled in 517ms (783 modules)
+ ✓ Compiled in 64ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 171ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 67ms (783 modules)
+ GET / 200 in 375ms
+ GET / 200 in 47ms
+ GET / 200 in 32ms
+ ✓ Compiled /favicon.ico in 186ms (492 modules)
+ GET /favicon.ico 200 in 233ms
+ ✓ Compiled /api/feedback in 134ms (518 modules)
+ POST /api/feedback 200 in 16872ms
+ POST /api/feedback 200 in 14851ms
+ ✓ Compiled /_not-found in 229ms (815 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 315ms
+ POST /api/feedback 200 in 11250ms
+ POST /api/feedback 200 in 12774ms
+ ✓ Compiled in 420ms (797 modules)
+ ✓ Compiled /api/feedback in 181ms (489 modules)
+ POST /api/feedback 200 in 15019ms
+   Reload env: .env.local
+ ✓ Compiled in 227ms (783 modules)
+ ✓ Compiled in 69ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 666ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 145ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 192ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 96ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 206ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 146ms (783 modules)
+   Reload env: .env.local
+ ✓ Compiled in 131ms (783 modules)
+ ✓ Compiled in 62ms (783 modules)
+ ✓ Compiled in 78ms (783 modules)
+ GET / 200 in 256ms
+ ✓ Compiled /favicon.ico in 175ms (492 modules)
+ GET /favicon.ico 200 in 226ms
+ ✓ Compiled /api/feedback in 102ms (518 modules)
+ POST /api/feedback 200 in 12258ms
+ POST /api/feedback 200 in 17740ms
+ POST /api/feedback 200 in 22356ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 425ms (1023 modules)
+ GET / 200 in 191ms
+ GET / 200 in 34ms
+ ✓ Compiled in 156ms (523 modules)
