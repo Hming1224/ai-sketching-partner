@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import getStroke from "perfect-freehand";
 import getSvgPathFromStroke from "@/lib/getSvgPathFromStroke";
+import { clsx } from "clsx";
 
 const MIN_PRESSURE = 0.015;
 
@@ -23,7 +24,7 @@ function throttle(callback, delay) {
   };
 }
 
-const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart }, ref) => {
+const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart, disabled }, ref) => {
   const mainCanvasRef = useRef(null);
   const drawingCanvasRef = useRef(null);
   const [strokes, setStrokes] = useState([]);
@@ -106,7 +107,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart }, ref) => 
 
   const handlePointerDown = useCallback(
     (e) => {
-      if (e.button !== 0 || e.pointerType === 'touch') return;
+      if (disabled || e.button !== 0 || e.pointerType === 'touch') return;
 
       if (!hasDrawingStarted) {
         onDrawStart?.();
@@ -126,7 +127,7 @@ const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart }, ref) => 
         ...brushOptions,
       });
     },
-    [brushOptions, getCanvasPosition]
+    [brushOptions, getCanvasPosition, hasDrawingStarted, onDrawStart, disabled]
   );
 
   const handlePointerMove = useCallback(
@@ -255,7 +256,12 @@ const CanvasArea = forwardRef(({ brushOptions, onChange, onDrawStart }, ref) => 
 
   return (
     <div
-      className="relative w-full h-full touch-none select-none bg-white rounded overflow-hidden border border-gray-300"
+      className={clsx(
+        "relative w-full h-full touch-none select-none bg-white rounded overflow-hidden border border-gray-300",
+        {
+          "opacity-50 pointer-events-none": disabled,
+        }
+      )}
       style={{ width: "100%", height: "100%", userSelect: "none", WebkitUserSelect: "none" }}
     >
       <canvas

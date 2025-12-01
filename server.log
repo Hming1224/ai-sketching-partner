@@ -7,8 +7,20 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 2.1s
- ✓ Compiled /api/feedback in 168ms (57 modules)
- POST /api/feedback 200 in 13267ms
- POST /api/feedback 200 in 13069ms
- POST /api/feedback 200 in 16065ms
+ ✓ Ready in 1460ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1295ms (797 modules)
+ GET / 200 in 1707ms
+ ✓ Compiled in 303ms (337 modules)
+ ✓ Compiled /api/feedback in 212ms (489 modules)
+ POST /api/feedback 200 in 14039ms
+ POST /api/feedback 200 in 15331ms
+ POST /api/feedback 200 in 12199ms
+ POST /api/feedback 200 in 15612ms
+ ✓ Compiled in 445ms (797 modules)
+ ✓ Compiled in 186ms (797 modules)
+ ✓ Compiled in 172ms (797 modules)
+ ✓ Compiled in 359ms (797 modules)
+ ✓ Compiled /api/feedback in 103ms (489 modules)
+ POST /api/feedback 200 in 15191ms
+ POST /api/feedback 200 in 16420ms

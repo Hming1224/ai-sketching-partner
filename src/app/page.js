@@ -99,6 +99,7 @@ export default function Home() {
   const [feedbackResponseTime, setFeedbackResponseTime] = useState(null);
   const [initialFeedbackDisplayTime, setInitialFeedbackDisplayTime] =
     useState(null);
+  const drawingStartTimeRef = useRef(null);
 
   // [修改一] 使用 useRef 來記住不同工具的設定
   const savedBrushOptionsRef = useRef(DEFAULT_BRUSH_OPTIONS);
@@ -265,6 +266,13 @@ export default function Home() {
           );
         }
 
+        // Restore the original IFD time from the very first record
+        if (existingData.feedbackHistory[0]?.initialFeedbackDisplayTime) {
+          setInitialFeedbackDisplayTime(
+            existingData.feedbackHistory[0].initialFeedbackDisplayTime
+          );
+        }
+
         setIsLoggedIn(true);
         setFeedbackDisplayTime(new Date()); // Start new timer for the current drawing
         setToolChangesCount(0);
@@ -318,6 +326,7 @@ export default function Home() {
     setToolChangesCount(0);
     setPreviousFeedbackCreatedAt(null);
     setInitialFeedbackDisplayTime(null);
+    drawingStartTimeRef.current = null;
   };
 
   const handleSaveInputs = () => {
@@ -332,7 +341,6 @@ export default function Home() {
       setIsEditing(false);
       setOpenAccordionItems((prev) => prev.filter((item) => item !== "task"));
       setInitialFeedbackState("loading");
-      setInitialFeedbackDisplayTime(new Date());
       setTimeout(() => {
         setInitialFeedbackState("visible");
         setInitialFeedbackDisplayTime(new Date());
@@ -472,7 +480,8 @@ export default function Home() {
         body: formData,
       });
       const apiCallEndTime = new Date();
-      const responseDuration = apiCallEndTime.getTime() - apiCallStartTime.getTime();
+      const responseDuration =
+        apiCallEndTime.getTime() - apiCallStartTime.getTime();
       setFeedbackResponseTime(responseDuration);
 
       if (!res.ok) {
@@ -482,13 +491,28 @@ export default function Home() {
       const data = await res.json();
       const feedback = data.feedback;
 
-      const displayDuration = drawingStartTime
-        ? drawingStartTime.getTime() - feedbackDisplayTime.getTime()
+      const startTimeFromRef = drawingStartTimeRef.current;
+
+      let displayDuration = null;
+      if (sketchCount === 1) {
+        displayDuration = startTimeFromRef
+          ? startTimeFromRef.getTime() - initialFeedbackDisplayTime.getTime()
+          : null;
+      } else {
+        displayDuration = startTimeFromRef
+          ? startTimeFromRef.getTime() - feedbackDisplayTime.getTime()
+          : null;
+      }
+
+      const drawingDuration = startTimeFromRef
+        ? apiCallStartTime.getTime() - startTimeFromRef.getTime()
         : null;
 
-      const drawingDuration = drawingStartTime
-        ? apiCallEndTime.getTime() - drawingStartTime.getTime()
-        : null;
+      const debugSnapshot = `DS_Time: ${
+        startTimeFromRef?.getTime() || "null"
+      }, FD_Time: ${feedbackDisplayTime?.getTime() || "null"}, PFC_Time: ${
+        previousFeedbackCreatedAt?.getTime() || "null"
+      }, IFD_Time: ${initialFeedbackDisplayTime?.getTime() || "null"}`;
 
       const result = await uploadSketchAndFeedback(
         blob,
@@ -499,11 +523,13 @@ export default function Home() {
         selectedMode,
         targetUser,
         userNeed,
-        drawingStartTime,
+        startTimeFromRef,
         toolChangesCount,
         responseDuration,
         displayDuration,
-        drawingDuration
+        drawingDuration,
+        debugSnapshot,
+        initialFeedbackDisplayTime // Pass IFD_Time to be saved
       );
 
       const newFeedbackRecord = {
@@ -516,8 +542,10 @@ export default function Home() {
         targetUser: targetUser,
         userNeed: userNeed,
         userSketchUrl: result.userSketchUrl,
-        drawingStartTime: drawingStartTime,
+        drawingStartTime: startTimeFromRef,
         drawingDuration: drawingDuration,
+        debug_state_snapshot: debugSnapshot,
+        initialFeedbackDisplayTime: initialFeedbackDisplayTime,
         timestamp: new Date(),
         createdAt: apiCallEndTime,
       };
@@ -531,12 +559,17 @@ export default function Home() {
       if (feedback && !feedback.analysis?.error) {
         canvasRef.current?.clearCanvas();
         canvasRef.current?.resetDrawingState(); // Reset the flag in CanvasArea
-        setDrawingStartTime(null); // Reset the drawing start time for the next sketch
+        setDrawingStartTime(null); // Reset the drawing start time state
+        drawingStartTimeRef.current = null; // Reset the ref
         setFeedbackDisplayTime(new Date()); // Set the display time for the new feedback
       }
     } catch (error) {
       console.error("處理失敗：", error);
       alert("處理失敗，請重試");
+      // Reset timing state to prevent a dirty state for the next attempt
+      canvasRef.current?.resetDrawingState();
+      setDrawingStartTime(null);
+      drawingStartTimeRef.current = null;
     } finally {
       setIsLoadingAI(false);
     }
@@ -1030,7 +1063,12 @@ export default function Home() {
               ref={canvasRef}
               brushOptions={brushOptions}
               onChange={updateCanvasEmptyStatus}
-              onDrawStart={() => setDrawingStartTime(new Date())}
+              onDrawStart={() => {
+                const now = new Date();
+                setDrawingStartTime(now);
+                drawingStartTimeRef.current = now;
+              }}
+              disabled={isLoadingAI}
             />
           </div>
 
