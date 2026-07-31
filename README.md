@@ -2,6 +2,7 @@
 
 生成式 AI 草圖合作系統，支援設計受試者在同一個網頁中完成「閱讀任務、設定目標受眾與需求、手繪草圖、取得 AI 回饋、查看創作歷程」等流程。這個專案主要用於碩士論文實驗，目標是比較不同 AI 回饋形式對草圖發想與設計迭代的影響。
 
+論文連結：[人智協作中人工智慧代理人的回饋取向與形式對設計構思之影響](https://hdl.handle.net/11296/j4axzf)<br>
 網站連結：[ai-sketching-partner.vercel.app](https://ai-sketching-partner.vercel.app/)
 
 ## 專案目標
