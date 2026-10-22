@@ -1,0 +1,101 @@
+diff --git a/src/app/api/feedback/route.js b/src/app/api/feedback/route.js
+index ee7b766..ddd9113 100644
+--- a/src/app/api/feedback/route.js
++++ b/src/app/api/feedback/route.js
+@@ -57,33 +57,37 @@ export async function POST(req) {
+             "concept_structure_chinese": "A **concrete suggestion** for the chair's supportive quality, using simple adjectives.",
+             "concept_form_chinese": "A **clear new direction** for the shapes and their relationships, using simple adjectives.",
+             "concept_materiality_chinese": "An **easy-to-imagine idea** for the sensory experience of the materials, using simple adjectives.",
+-            "narrative_feedback_chinese": "A **constructive and insightful suggestion** that synthesizes the three concepts above into a single, forward-looking paragraph of approximately 200 characters in Traditional Chinese. This should guide the user on how they could evolve their design."
++            "narrative_feedback_chinese": "A **constructive and insightful suggestion** that synthesizes the three concepts above into a single, forward-looking paragraph of approximately 200 characters in Traditional Chinese. 
++            This should guide the user on how they could evolve their design."
+           }`;
+ 
+-    const sharedIdeationPrompt_task = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
+-          Analyze the general design context: "${taskDescription}".
++    const sharedIdeationPrompt_task = (previousPersonasString) =>
++      `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
++          Analyze the general design context: \"${taskDescription}\".
++          ${previousPersonasString}
+ 
+           Your tasks are:
+-          1.  **Invent a creative and specific Target User and their Key Need within the context of a long-term care center.** This is the most important step. Your goal is to inspire the designer with a fresh perspective.
++          1.  **Invent a COMPLETELY NEW and specific Target User and their Key Need within the context of a long-term care center.** This is the most important step. Your goal is to inspire the designer with a fresh perspective that is DIFFERENT from all previous ones.
+           2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
+           
+-          **IMPORTANT RULES for defining the user:**
++          **ABSOLUTE CRITICAL RULES for defining the user:**
+           - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., the elderly, caregivers, family visitors).**
+-          - **LENGTH: 
+-            defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 20 characters.**
++          - **YOU MUST NOT REPEAT or create a similar persona to the ones listed under "PREVIOUSLY USED PERSONAS".** This is a hard rule.
++          - **LENGTH: defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 40 characters.**
++          - **ENSURE the user and need are directly related.**
++          - **DO NOT use Markdown syntax, titles, or lists in your response.**
+ 
+           Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+-          - 請使用口語、白話、親切自然的台灣正體中文來提供建議，就像在和設計系的學弟妹輕鬆地對話一樣。避免生硬、學術或過於抽象的詞彙。
+           - DO NOT provide any color-related suggestions.
+           
+           Respond ONLY with a valid JSON object in the following format:
+           {
+-            "defined_target_user_chinese": "A creative, specific user persona (UNDER 40 CHARACTERS).",
+-            "defined_user_need_chinese": "A critical and specific user need for them (UNDER 40 CHARACTERS).",
+-            "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the defined user in Traditional Chinese.",
+-            "concept_form_chinese": "A description of the abstract geometric forms, tailored to the defined user in Traditional Chinese.",
+-            "concept_materiality_chinese": "A sensory description of the materials, tailored to the defined user in Traditional Chinese.",
+-            "narrative_feedback_chinese": "A single, flowing paragraph in Traditional Chinese (approx. 200 characters). It MUST start with the EXACT phrase: '我設定的目標受眾是 [The user you just defined], 他們的需求是 [The need you just defined]。根據以上資訊，我們可以從幾個方向來發想，' and then continue by proposing new, innovative solutions based on the Design DNA. Be descriptive and imaginative; DO NOT use lists or titles."
++            "defined_target_user_chinese": "A creative, specific, and COMPLETELY NEW user persona you have invented.",
++            "defined_user_need_chinese": "A critical and specific user need you have identified for them, which has not been addressed before.",
++            "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the new user in Traditional Chinese.",
++            "concept_form_chinese": "A description of the abstract geometric forms, tailored to the new user in Traditional Chinese.",
++            "concept_materiality_chinese": "A sensory description of the materials, tailored to the new user in Traditional Chinese.",
++            "narrative_feedback_chinese": "A single, flowing paragraph in Traditional Chinese (approx. 200 characters). It MUST start with the EXACT phrase: '在長照中心的設計任務之下，我想試著從一個不同的角度來切入，給你參考看看。我設定了 [The user you just invented] 這個目標受眾，他們的需求是 [The need you just identified]。基於這個情境，我的想法是...' and then continue by proposing new, innovative solutions based on the Design DNA. Be descriptive and imaginative; DO NOT use lists or titles."
+           }`;
+ 
+     const getAiIdeation = async (prompt, isSketchMode, imagePart) => {
+@@ -151,33 +155,7 @@ export async function POST(req) {
+             .join("\n")}`
+             : "";
+ 
+-        prompt = `You are an expert in avant-garde industrial design and ergonomic theory for long-term care facilities, with a talent for imagining unique user stories.
+-          Analyze the general design context: \"${taskDescription}\".
+-          ${previousPersonasString}
+-
+-          Your tasks are:
+-          1.  **Invent a COMPLETELY NEW and specific Target User and their Key Need within the context of a long-term care center.** This is the most important step. Your goal is to inspire the designer with a fresh perspective that is DIFFERENT from all previous ones.
+-          2.  **Based on the User and Need you just invented**, provide ONE abstract design concept, described from THREE aspects (Structure, Form, Materiality), in **Traditional Chinese**.
+-          
+-          **ABSOLUTE CRITICAL RULES for defining the user:**
+-          - **STRICT CONTEXT: The user and need MUST be plausible and directly related to the daily life, challenges, or activities within a long-term care facility (e.g., the elderly, caregivers, family visitors).**
+-          - **YOU MUST NOT REPEAT or create a similar persona to the ones listed under "PREVIOUSLY USED PERSONAS".** This is a hard rule.
+-          - **LENGTH: defined_target_user_chinese and defined_user_need_chinese MUST each be UNDER 40 characters.**
+-          - **ENSURE the user and need are directly related.**
+-          - **DO NOT use Markdown syntax, titles, or lists in your response.**
+-
+-          Use rich, descriptive adjectives. Be analytical and conceptual. AVOID overly literary language.
+-          - DO NOT provide any color-related suggestions.
+-          
+-          Respond ONLY with a valid JSON object in the following format:
+-          {
+-            "defined_target_user_chinese": "A creative, specific, and COMPLETELY NEW user persona you have invented.",
+-            "defined_user_need_chinese": "A critical and specific user need you have identified for them, which has not been addressed before.",
+-            "concept_structure_chinese": "An adjective-rich description of the chair's supportive quality, tailored to the new user in Traditional Chinese.",
+-            "concept_form_chinese": "A description of the abstract geometric forms, tailored to the new user in Traditional Chinese.",
+-            "concept_materiality_chinese": "A sensory description of the materials, tailored to the new user in Traditional Chinese.",
+-            "narrative_feedback_chinese": "A single, flowing paragraph in Traditional Chinese (approx. 200 characters). It MUST start with the EXACT phrase: '在長照中心的設計任務之下，我想試著從一個不同的角度來切入，給你參考看看。我設定了 [The user you just invented] 這個目標受眾，他們的需求是 [The need you just identified]。基於這個情境，我的想法是...' and then continue by proposing new, innovative solutions based on the Design DNA. Be descriptive and imaginative; DO NOT use lists or titles."
+-          }`;
++        prompt = sharedIdeationPrompt_task(previousPersonasString);
+       }
+ 
+       aiIdea = await getAiIdeation(prompt, isSketchMode, imagePart);
+@@ -201,7 +179,8 @@ export async function POST(req) {
+                   **Core Task:** You are a visionary designer tasked with radically reinterpreting a user's sketch. Your goal is to produce a new concept that is **bold, unexpected, and pushes the boundaries** of the original idea.
+ 
+                   - **Deconstruct and Exaggerate:** Don't just transform the sketch, deconstruct it. Identify its most interesting feature—a curve, a joint, an angle—and **exaggerate it dramatically**.
+-                  - **Radical Reinterpretation:** Use the user's sketch as a faint echo, not a foundation. Your output should be a **visually provocative evolution** that challenges the initial concept. Blend the core essence with the new conceptual ideas below in a way that feels entirely new.
++                  - **Radical Reinterpretation:** Use the user's sketch as a faint echo, not a foundation. Your output should be a **visually provocative evolution** that challenges the initial concept. 
++                      Blend the core essence with the new conceptual ideas below in a way that feels entirely new.
+ 
+                   **New Conceptual Ideas:**
+                   - The main form is defined by its enclosing quality: "${aiIdea.concept_structure_chinese}".

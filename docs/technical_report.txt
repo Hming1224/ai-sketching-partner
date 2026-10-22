@@ -1,0 +1,109 @@
+{
+  "projectName": "ai-sketching-partner",
+  "description": "一個全端 Web 應用程式，允許使用者繪製草圖，並利用 AI 模型（Google Gemini）根據草圖生成圖片。它還提供使用者回饋和歷史記錄功能。",
+  "architecture": "採用 Next.js 的整合式全端架構。應用程式的核心功能（前端渲染和後端 API 路由）都包含在同一個 Next.js 專案中。",
+  "language": "JavaScript (ESM)",
+  "technologies": {
+    "framework": "Next.js 14.2.3",
+    "frontend": [
+      "React 18.2.0",
+      "perfect-freehand (用於繪圖)",
+      "lucide-react (圖示)",
+      "file-saver (儲存檔案)"
+    ],
+    "backend": [
+      "Next.js API Routes",
+      "@google/genai (Google Generative AI)",
+      "firebase (用於後端服務，例如儲存)"
+    ],
+    "styling": [
+      "Tailwind CSS",
+      "Radix UI (用於無障礙元件基礎)",
+      "shadcn/ui (元件庫)",
+      "tailwindcss-animate"
+    ],
+    "deployment": "針對 Vercel 平台進行了優化（如此 `vercel-build` 指令所示）"
+  },
+  "frontend": {
+    "framework": "使用 Next.js App Router 的 React。主要的頁面入口點是 `src/app/page.js`，並在 `src/app/layout.js` 中定義了佈局。",
+    "uiComponents": "UI 元件位於 `src/components/`。專案使用了 `shadcn/ui` 的元件，這些元件基於 Radix UI 構建，例如 `Accordion`, `Button`, `Slider` 等。`lucide-react` 提供圖示。",
+    "stateManagement": "透過 React `useState`, `useRef`, 和 `useCallback` hooks 進行複雜的客戶端狀態管理。",
+    "keyFiles": [
+      "src/app/page.js (主要應用程式頁面與核心邏輯)",
+      "src/app/layout.js (根佈局)",
+      "src/components/CanvasArea.js (繪圖畫布區域)",
+      "src/components/BrushSettingsPanel.js (筆刷設定)",
+      "tailwind.config.js (樣式設定)"
+    ]
+  },
+  "backend": {
+    "framework": "後端邏輯是透過 Next.js API Routes 實現的，檔案位於 `src/app/api/**/route.js`。",
+    "apiRoutes": "專案中至少包含一個 API 路由 `api/feedback`，用於接收前端的 FormData 並與 AI 模型互動。",
+    "databaseAndStorage": "使用 Firebase。`next.config.mjs` 中設定了 Firebase Storage 的圖片網域，`firebase` 套件也已安裝，表明用於儲存使用者上傳的草圖和 AI 生成的圖片。",
+    "externalAPIs": "應用程式連接到 Google Generative AI (`@google/genai`) 的服務，根據前端傳來的 `feedbackType` 決定呼叫哪個模型以及如何生成內容。",
+    "keyFiles": [
+      "src/app/api/feedback/route.js (回饋 API)",
+      "src/lib/firebase.js (Firebase 初始化和配置)",
+      "src/lib/upload.js (處理檔案上傳到 Firebase Storage)",
+      "next.config.mjs (後端相關設定，如圖片來源網域)"
+    ]
+  },
+  "aiInteractionModel": {
+    "systemPromptStrategy": {
+      "description": "系統透過向後端 API (`/api/feedback`) 發送一個包含多模態資訊的 `FormData` 物件來建構一個複雜的 System Prompt。這個 prompt 是動態生成，旨在為 AI 提供豐富的上下文以產生精確且相關的回饋。",
+      "components": [
+        {
+          "name": "視覺輸入 (Visual Input)",
+          "detail": "使用者的畫布草圖會被裁切（僅包含繪製內容和周圍的 padding），並轉換為 PNG 圖片 (`sketch.png`)。這為 AI 提供了直接的視覺上下文。"
+        },
+        {
+          "name": "任務上下文 (Task Context)",
+          "detail": "包含三個使用者定義的文字欄位：`taskDescription` (高階設計任務，例如『設計一張長照中心的椅子』)、`targetUser` (目標受眾)、和 `userNeed` (用戶需求)。"
+        },
+        {
+          "name": "模式指導 (Mode Direction)",
+          "detail": "前端傳送的 `feedbackType` 欄位 (`sketch-text`, `sketch-image`, `task-text`, `task-image`) 是指導 AI 行為的核心。後端 API 根據此模式來決定 System Prompt 的主要指令，例如是『分析此草圖並提供文字建議』還是『根據任務描述生成一張參考圖片』。"
+        },
+        {
+          "name": "歷史對話記憶 (Historical Context)",
+          "detail": "為了讓 AI 的回饋具有連續性並避免重複，系統會將 `previousPersonas` (先前定義的用戶/需求) 和 `previousFeedbackText` (AI 先前回饋的文字) 一併發送。這模擬了一種對話記憶，讓 AI 能夠『記住』之前的互動。"
+        }
+      ]
+    },
+    "aiFeedbackTuning": {
+      "description": "AI 回饋的調校是透過前端的使用者選擇和後端的 prompt 工程策略相結合來實現的。",
+      "methods": [
+        {
+          "name": "使用者模式選擇 (User-Selected Modes)",
+          "detail": "最主要的調校機制是讓使用者從四種 `FEEDBACK_MODES` 中選擇一種。這個選擇從根本上改變了 AI 的任務目標和輸出格式（文字 vs. 圖片），是最高層次的調校。"
+        },
+        {
+          "name": "後端 Prompt 路由",
+          "detail": "雖然無法直接看到後端程式碼，但可以推斷 `/api/feedback` 路由內部有一個邏輯交換器 (switch)。它會根據收到的 `feedbackType` 選擇一個預先設計好的、針對特定任務（分析、生成、文字、圖片）的 System Prompt 模板，並將前端傳來的各種資料填入模板中，然後才發送給 Google的模型。"
+        },
+        {
+          "name": "結構化輸出 (Structured Output)",
+          "detail": "從前端 `renderFeedbackDetails` 函式的邏輯可以看出，後端 API 可能會要求 AI 模型以 JSON 格式回傳結構化資料（例如 `narrative_feedback_chinese`, `concept_structure_chinese`），而不僅僅是純文字。這使得前端可以更穩定地解析和呈現回饋，是一種針對輸出格式的隱性調校。"
+        }
+      ]
+    },
+    "designIntegration": {
+      "description": "AI 的功能深度整合在應用程式的核心使用者體驗中，形成一個清晰的『人機協作』設計循環。",
+      "workflow": "1. **定義情境**: 使用者填寫設計任務、目標受眾和需求。 2. **創作**: 使用者在畫布上繪製草圖。 3. **獲取回饋**: 使用者點擊『獲取回饋』，觸發對 AI 的呼叫。 4. **分析與啟發**: AI 的回饋（文字或圖片）顯示在專門的面板中。 5. **迭代**: 使用者根據 AI 的回饋，清除畫布並繪製下一張草圖。",
+      "keyComponents": [
+        {
+          "name": "三欄式佈局",
+          "detail": "UI 明顯分為三個主要區域：頂部的『設計任務』、右側的『畫布』和左側的『AI 協作夥伴』。這種佈局在視覺上強化了使用者與 AI 之間的夥伴關係和工作流程。"
+        },
+        {
+          "name": "狀態指示器",
+          "detail": "`AILoadingIndicator` 在等待 AI 回應時提供明確的視覺反饋，管理使用者的預期。按鈕的禁用狀態 (`isSendButtonDisabled`) 也防止在不適當的時機觸發 AI。"
+        },
+        {
+          "name": "創作歷程 (HistoryModal)",
+          "detail": "提供了一個可以回顧所有歷史草圖和 AI 回饋的模態視窗。這不僅是功能，更是設計哲學的一部分，鼓勵使用者反思整個創作過程，而不僅僅是當前的單次回饋。"
+        }
+      ]
+    }
+  }
+}
